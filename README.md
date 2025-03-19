@@ -1,4 +1,4 @@
-# Nandi Platform
+# Nandi Platform 1.0
 
 A holistic personal growth and spiritual wellness application, combining ancient wisdom with modern technology.
 
