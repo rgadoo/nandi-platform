@@ -1,0 +1,161 @@
+/* src/components/Home/Home.css */
+.card {
+  background-color: #f9f5f0;
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.1s;
+  height: 600px; /* Fixed height to match KarmaCafe exactly */
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f4e4d0;
+}
+
+.card h2 {
+  font-size: 22px;
+  font-weight: 500;
+  color: #b17d4a;
+}
+
+.card p {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.nandi-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.text-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #f4a460;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.xp-tracker {
+  font-size: 14px;
+  color: #b17d4a;
+  background-color: #f4e4d0;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-weight: 500;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.button {
+  display: flex;
+  width: 100%;
+  height: 50px;
+  margin: 0 auto;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  color: white;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  text-decoration: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+.button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Coming Soon items */
+.coming-soon-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.coming-soon-item {
+  background-color: #f4e4d0;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 3px solid #f4a460;
+}
+
+.coming-soon-label {
+  font-size: 14px;
+  color: #b17d4a;
+  font-weight: 500;
+}
+
+.coming-soon-badge {
+  background-color: #fcebd3;
+  color: #b17d4a;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+/* Module-specific button styles */
+.karmacafe-button {
+  background-color: #f4a460;
+}
+
+.soulquest-button {
+  background-color: #e07a3a;
+}
+
+.wisdompets-button {
+  background-color: #b17d4a;
+}
+
+/* Home-specific styles */
+.home h2 {
+  color: #b17d4a;
+}
