@@ -14,10 +14,10 @@ function Home() {
 
             <div className="home-content">
                 <div className="app-grid">
-                    <Link to="/karma" className="app-card">
-                        <div className="app-icon">🧘</div>
-                        <h2>KarmaCafe</h2>
-                        <p>Chat with philosophical avatars exploring spirituality and mindfulness</p>
+                    <Link to="/chat-test" className="app-card">
+                        <div className="app-icon">💬</div>
+                        <h2>Chat Bubbles</h2>
+                        <p>Engage with different spiritual assistants through themed chat interfaces</p>
                     </Link>
                     
                     <Link to="/soul" className="app-card">
@@ -30,12 +30,6 @@ function Home() {
                         <div className="app-icon">🐾</div>
                         <h2>WisdomPets</h2>
                         <p>Virtual companions that guide you through daily meditation</p>
-                    </Link>
-                    
-                    <Link to="/chat-test" className="app-card">
-                        <div className="app-icon">💬</div>
-                        <h2>Chat Test</h2>
-                        <p>Test the new Mars-style chat component</p>
                     </Link>
                 </div>
             </div>

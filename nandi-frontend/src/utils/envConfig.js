@@ -4,7 +4,7 @@
 
 /**
  * Checks if a specific feature should use mock data based on environment variables
- * @param {string} feature - Feature name (e.g., 'KARMA_CAFE', 'SOUL_QUEST', 'WISDOM_PETS')
+ * @param {string} feature - Feature name (e.g., 'CHAT', 'SOUL_QUEST', 'WISDOM_PETS')
  * @returns {boolean} - True if mock data should be used, false otherwise
  */
 export const shouldUseMockData = (feature) => {
@@ -37,7 +37,7 @@ export const logEnvConfig = () => {
     console.log('Environment Configuration:');
     console.log(`API URL: ${getApiBaseUrl()}`);
     console.log(`Global Mock Data: ${shouldUseMockData('GLOBAL')}`);
-    console.log(`KarmaCafe Mock: ${shouldUseMockData('KARMA_CAFE')}`);
+    console.log(`Chat Mock: ${shouldUseMockData('CHAT')}`);
     console.log(`SoulQuest Mock: ${shouldUseMockData('SOUL_QUEST')}`);
     console.log(`WisdomPets Mock: ${shouldUseMockData('WISDOM_PETS')}`);
   }

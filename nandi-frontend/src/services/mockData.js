@@ -1,7 +1,7 @@
 // Mock data to simulate backend responses
 
-// KarmaCafe mock responses
-export const karmaCafeResponses = {
+// Chat mock responses
+export const chatResponses = {
   karma: [
     "The seeds you plant today will determine the harvest of tomorrow. Choose your actions wisely, for they shape not just your future, but the collective consciousness.",
     "Each choice creates ripples in the cosmic order. When you act with awareness and compassion, you align with the natural flow of dharma and reduce suffering for all beings.",
@@ -9,14 +9,14 @@ export const karmaCafeResponses = {
     "Your challenges are not punishments, but opportunities for growth. The universe brings you exactly what you need to evolve on your spiritual journey.",
     "The wisdom of karma teaches us that we are responsible for our own liberation. Through conscious action, meditation, and service, we can transcend the cycles of cause and effect."
   ],
-  dharma: [
+  wisdom: [
     "Dharma is not merely duty, but your unique path of righteousness. When you align your actions with your authentic purpose, you bring harmony to both yourself and society.",
     "The Bhagavad Gita teaches us that it is better to perform one's own duties imperfectly than to master the duties of another. Discover your svadharma and fulfill it with integrity.",
     "Universal dharma calls us to practice ahimsa (non-violence), satya (truthfulness), asteya (non-stealing), brahmacharya (right use of energy), and aparigraha (non-possessiveness).",
     "When faced with ethical dilemmas, look beyond personal gain. True dharma upholds the welfare of all beings and preserves the cosmic order.",
     "As the seasons change according to natural law, so too should our actions align with the rhythms of our soul's purpose. In each stage of life, dharma takes a different form."
   ],
-  atma: [
+  meditation: [
     "The Self (Atman) is neither born nor dies. Beyond the changing mind and body, your true nature is pure awareness—infinite, unchanging, and ever-free.",
     "Meditation is the journey from the periphery to the center, from the waves to the ocean itself. In deep silence, the illusion of separateness dissolves, and only the Self remains.",
     "You are not the doer, but the witness. Practice observing your thoughts, emotions, and sensations without identification, and you will discover the eternal presence that is your essence.",

@@ -14,13 +14,6 @@ const Navbar = () => {
                 <span className="nav-label">Home</span>
             </NavLink>
             <NavLink
-                to="/karma"
-                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-            >
-                <span className="nav-icon">💬</span>
-                <span className="nav-label">KarmaCafe</span>
-            </NavLink>
-            <NavLink
                 to="/soul"
                 className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             >
@@ -33,6 +26,13 @@ const Navbar = () => {
             >
                 <span className="nav-icon">🐘</span>
                 <span className="nav-label">WisdomPets</span>
+            </NavLink>
+            <NavLink
+                to="/chat-test"
+                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            >
+                <span className="nav-icon">💬</span>
+                <span className="nav-label">Chat</span>
             </NavLink>
         </div>
     );
