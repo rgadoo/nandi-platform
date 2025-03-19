@@ -13,34 +13,39 @@
 body {
   background-color: var(--primary-bg);
   font-family: 'Nunito', 'Arial Rounded MT Bold', sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 /* Main container styles */
 .home-container {
-  max-width: 500px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0;
   background-color: var(--primary-bg);
   min-height: 100vh;
   position: relative;
+  background-color: transparent;
+  
 }
 
 /* Phone frame for design purposes */
 .phone-frame {
   background-color: var(--card-bg);
-  border-radius: 40px;
+  border-radius: 20px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   position: relative;
   padding: 10px;
-  margin-bottom: 60px;
+  margin: 0;
+  min-height: 100vh;
 }
 
 .status-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 5px 15px 0;
+  padding: 10px 15px 0;
   color: var(--text-dark);
   font-size: 14px;
   font-weight: 600;
@@ -111,6 +116,7 @@ body {
 /* Progress section */
 .progress-section {
   margin-bottom: 15px;
+  padding: 0 12px;
 }
 
 .progress-card {
@@ -171,6 +177,7 @@ body {
   grid-template-rows: repeat(4, auto);
   gap: 12px;
   margin-bottom: 15px;
+  padding: 0 12px;
 }
 
 .app-card {
@@ -258,8 +265,9 @@ body {
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  max-width: 500px;
+  max-width: 100%;
   margin: 0 auto;
+  z-index: 100;
 }
 
 .nav-item {
@@ -284,8 +292,17 @@ body {
 /* Responsive design */
 @media (min-width: 768px) {
   .home-container {
-    padding-left: 40px;
-    padding-right: 40px;
+    max-width: 600px;
+    padding: 10px;
+  }
+  
+  .phone-frame {
+    border-radius: 40px;
+    margin-bottom: 60px;
+  }
+  
+  .bottom-nav {
+    max-width: 600px;
   }
 }
 
