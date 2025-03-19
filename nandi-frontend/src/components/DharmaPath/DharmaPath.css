@@ -1,0 +1,102 @@
+.dharma-container {
+  min-height: 100vh;
+  padding: 20px;
+  background-color: var(--primary-bg);
+}
+
+.clay-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.clay-content h1 {
+  text-align: center;
+  color: var(--text-dark);
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.clay-card {
+  background-color: var(--card-bg);
+  border-radius: 24px;
+  padding: 30px;
+  margin-bottom: 40px;
+  box-shadow: 
+    20px 20px 60px rgba(139, 94, 60, 0.1),
+    -20px -20px 60px rgba(255, 255, 255, 0.8),
+    inset 4px 4px 20px rgba(255, 255, 255, 0.5),
+    inset -8px -8px 20px rgba(139, 94, 60, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.clay-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    25px 25px 65px rgba(139, 94, 60, 0.15),
+    -25px -25px 65px rgba(255, 255, 255, 0.9),
+    inset 4px 4px 20px rgba(255, 255, 255, 0.5),
+    inset -8px -8px 20px rgba(139, 94, 60, 0.1);
+}
+
+.clay-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  padding: 20px 0;
+}
+
+.clay-item {
+  background-color: var(--card-bg);
+  border-radius: 20px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 
+    12px 12px 24px rgba(139, 94, 60, 0.1),
+    -12px -12px 24px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 10px rgba(255, 255, 255, 0.5),
+    inset -4px -4px 10px rgba(139, 94, 60, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.clay-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    15px 15px 30px rgba(139, 94, 60, 0.15),
+    -15px -15px 30px rgba(255, 255, 255, 0.9),
+    inset 2px 2px 10px rgba(255, 255, 255, 0.5),
+    inset -4px -4px 10px rgba(139, 94, 60, 0.1);
+}
+
+.clay-item h3 {
+  color: var(--text-dark);
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.clay-item p {
+  color: var(--text-light);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .clay-content {
+    padding: 10px;
+  }
+  
+  .clay-content h1 {
+    font-size: 2rem;
+  }
+  
+  .clay-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .clay-card {
+    padding: 20px;
+  }
+} 

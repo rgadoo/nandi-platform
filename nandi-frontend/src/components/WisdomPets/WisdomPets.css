@@ -194,6 +194,8 @@
 }
 
 .status-bar {
+  --bar-width: 0%;
+  width: var(--bar-width);
   display: flex;
   align-items: center;
   margin-bottom: 15px;

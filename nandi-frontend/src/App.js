@@ -6,8 +6,8 @@ import './App.css';
 import Home from './components/Home/Home';
 import SoulQuest from './components/SoulQuest/SoulQuest';
 import WisdomPets from './components/WisdomPets/WisdomPets';
-import ChatTest from './components/ChatTest/ChatTest';
-import ClayDemo from './components/ClayDemo/ClayDemo';
+import DharmaPath from './components/DharmaPath/DharmaPath';
+import KarmaCafe from './components/KarmaCafe/KarmaCafe';
 import { logEnvConfig } from './utils/envConfig';
 
 // Log environment configuration in development mode
@@ -23,8 +23,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/soul/*" element={<SoulQuest />} />
           <Route path="/pets/*" element={<WisdomPets />} />
-          <Route path="/chat-test" element={<ChatTest />} />
-          <Route path="/clay-demo" element={<ClayDemo />} />
+          <Route path="/dharma" element={<DharmaPath />} />
+          <Route path="/karma" element={<KarmaCafe />} />
         </Routes>
       </main>
     </div>

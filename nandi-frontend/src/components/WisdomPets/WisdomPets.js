@@ -162,32 +162,29 @@ const WisdomPets = () => {
             <p className="pet-type-badge">{selectedPet.type}</p>
             
             <div className="pet-status">
-              <div className="status-bar">
+              <div className="status-bar happiness" style={{ '--bar-width': `${petStatus.happiness}%` }}>
                 <label>Happiness:</label>
                 <div className="progress-bar">
                   <div 
                     className="progress" 
-                    style={{ width: `${petStatus.happiness}%` }}
                   ></div>
                 </div>
                 <span className="status-value">{petStatus.happiness}%</span>
               </div>
-              <div className="status-bar">
+              <div className="status-bar energy" style={{ '--bar-width': `${petStatus.energy}%` }}>
                 <label>Energy:</label>
                 <div className="progress-bar">
                   <div 
                     className="progress" 
-                    style={{ width: `${petStatus.energy}%` }}
                   ></div>
                 </div>
                 <span className="status-value">{petStatus.energy}%</span>
               </div>
-              <div className="status-bar">
+              <div className="status-bar wisdom" style={{ '--bar-width': `${petStatus.wisdom}%` }}>
                 <label>Wisdom:</label>
                 <div className="progress-bar">
                   <div 
                     className="progress" 
-                    style={{ width: `${petStatus.wisdom}%` }}
                   ></div>
                 </div>
                 <span className="status-value">{petStatus.wisdom}%</span>

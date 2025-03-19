@@ -76,16 +76,16 @@ function Home() {
                         </div>
                     </Link>
 
-                    <Link to="/chat-test" className="app-card clay" style={{ backgroundColor: '#d1eef9' }}>
-                        <div className="app-icon" style={{ backgroundColor: '#6b9ec3' }}>
+                    <Link to="/karma" className="app-card clay karma-cafe">
+                        <div className="app-icon">
                             <FaDog />
                         </div>
                         <h2>KarmaCafe</h2>
                         <p>Chat with wisdom</p>
                     </Link>
                     
-                    <Link to="/clay-demo" className="app-card clay">
-                        <div className="app-icon" style={{ backgroundColor: '#b17d4a' }}>
+                    <Link to="/dharma" className="app-card clay dharma-path">
+                        <div className="app-icon">
                             <FaPrayingHands />
                         </div>
                         <h2>Dharma Path</h2>
