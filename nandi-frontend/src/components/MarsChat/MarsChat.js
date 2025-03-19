@@ -13,13 +13,10 @@ import {
   Button
 } from "@chatscope/chat-ui-kit-react";
 
-// Define a constant for the avatar image URL - use process.env.PUBLIC_URL to ensure it works in all environments
-const AVATAR_URL = `${process.env.PUBLIC_URL}/images/nandi.png`;
-
 // Fallback avatar in case the image doesn't load
 const FALLBACK_AVATAR_URL = "https://ui-avatars.com/api/?name=AI&background=6b46c1&color=fff";
 
-const MarsChat = () => {
+const MarsChat = ({ theme, onClose }) => {
   // State to track if the image loaded successfully
   const [avatarLoaded, setAvatarLoaded] = useState(true);
   
@@ -31,14 +28,15 @@ const MarsChat = () => {
 
   // Get the current avatar URL (either custom or fallback)
   const getCurrentAvatarUrl = () => {
-    return avatarLoaded ? AVATAR_URL : FALLBACK_AVATAR_URL;
+    if (!avatarLoaded) return FALLBACK_AVATAR_URL;
+    return theme?.avatarImage ? `${process.env.PUBLIC_URL}${theme.avatarImage}` : FALLBACK_AVATAR_URL;
   };
   
   // State management
   const [messages, setMessages] = useState([
     {
       id: 1,
-      message: "Hello! This is Karma",
+      message: `Hello! This is ${theme?.name || 'AI Assistant'}`,
       sentTime: "just now",
       sender: "system",
       direction: "incoming",
@@ -48,7 +46,6 @@ const MarsChat = () => {
   
   const [isTyping, setIsTyping] = useState(false);
   const [inputMessage, setInputMessage] = useState("");
-  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Function to handle sending a message
   const handleSendMessage = (message) => {
@@ -84,117 +81,111 @@ const MarsChat = () => {
     }, 1500);
   };
 
-  // Simple function to generate responses
+  // Simple function to generate responses based on theme
   const getSystemResponse = (message) => {
     const lowerMessage = message.toLowerCase();
+    const themeId = theme?.id || 'default';
     
-    if (lowerMessage.includes("hello") || lowerMessage.includes("hi")) {
-      return "Hello there! How can I assist you today?";
-    } else if (lowerMessage.includes("help")) {
-      return "I'm here to help! You can ask me about our products, services, or any other information you need.";
-    } else if (lowerMessage.includes("thank")) {
-      return "You're welcome! Is there anything else I can help you with?";
-    } else {
-      return "Thank you for your message. I'll process that information and get back to you shortly.";
+    // Different responses based on chat theme
+    switch(themeId) {
+      case 'karma':
+        if (lowerMessage.includes("hello") || lowerMessage.includes("hi")) {
+          return "Hello there! I'm Karma, your spiritual guide. How can I assist you today?";
+        } else if (lowerMessage.includes("help")) {
+          return "I'm here to help you explore spiritual concepts and find meaning in your journey.";
+        } else {
+          return "That's an interesting perspective. Let's explore that further on your spiritual journey.";
+        }
+      
+      case 'wisdom':
+        if (lowerMessage.includes("hello") || lowerMessage.includes("hi")) {
+          return "Greetings! I am Wisdom, your knowledge companion. What would you like to learn today?";
+        } else if (lowerMessage.includes("help")) {
+          return "I can share insights and knowledge on various topics. Feel free to ask anything.";
+        } else {
+          return "That's a thoughtful question. Here's what I know about that based on my knowledge.";
+        }
+        
+      case 'meditation':
+        if (lowerMessage.includes("hello") || lowerMessage.includes("hi")) {
+          return "Welcome to a space of calm. I am your Meditation guide. How are you feeling today?";
+        } else if (lowerMessage.includes("help")) {
+          return "I can guide you through meditations, breathing exercises, or help you find inner peace.";
+        } else {
+          return "Take a deep breath. Let's approach this with mindfulness and presence.";
+        }
+        
+      default:
+        if (lowerMessage.includes("hello") || lowerMessage.includes("hi")) {
+          return "Hello there! How can I assist you today?";
+        } else if (lowerMessage.includes("help")) {
+          return "I'm here to help! You can ask me about our products, services, or any other information you need.";
+        } else {
+          return "Thank you for your message. I'll process that information and get back to you shortly.";
+        }
     }
   };
 
-  // Toggle chat window
-  const toggleChat = () => {
-    setIsChatOpen(!isChatOpen);
-  };
-
   return (
-    <div className="mars-chat-container">
-      {/* Chat toggle button */}
-      <button 
-        className="chat-toggle-button"
-        onClick={toggleChat}
-        style={{
-          position: "fixed",
-          bottom: "80px",
-          right: "20px",
-          width: "60px",
-          height: "60px",
-          borderRadius: "50%",
-          backgroundColor: "#6b46c1",
-          color: "white",
-          border: "none",
-          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
-          zIndex: 999,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer"
-        }}
-      >
-        {isChatOpen ? "✕" : "💬"}
-      </button>
-
-      {/* Chat window */}
-      {isChatOpen && (
-        <div
-          className="mars-chat-window"
-          style={{
-            position: "fixed",
-            bottom: "150px",
-            right: "20px",
-            width: "350px",
-            height: "500px",
-            boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
-            borderRadius: "10px",
-            overflow: "hidden",
-            zIndex: 998
-          }}
-        >
-          <MainContainer>
-            <ChatContainer>
-              <ConversationHeader>
-                <Avatar 
-                  src={getCurrentAvatarUrl()}
-                  name="AI Assistant" 
-                  status="available"
-                  onError={handleImageError}
-                />
-                <ConversationHeader.Content 
-                  userName="Karma" 
-                  info=""
-                />
-                <ConversationHeader.Actions>
-                  <Button onClick={toggleChat}>Close</Button>
-                </ConversationHeader.Actions>
-              </ConversationHeader>
-              
-              <MessageList 
-                typingIndicator={isTyping ? <TypingIndicator content="Assistant is typing" /> : null}
+    <div className="mars-chat-window"
+      style={{
+        position: "fixed",
+        bottom: "150px",
+        right: "20px",
+        width: "350px",
+        height: "500px",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
+        borderRadius: "10px",
+        overflow: "hidden",
+        zIndex: 998
+      }}
+    >
+      <MainContainer>
+        <ChatContainer>
+          <ConversationHeader style={{ backgroundColor: theme?.color || '#6b46c1' }}>
+            <Avatar 
+              src={getCurrentAvatarUrl()}
+              name={theme?.name || "AI Assistant"} 
+              status="available"
+              onError={handleImageError}
+            />
+            <ConversationHeader.Content 
+              userName={theme?.name || "AI Assistant"} 
+              info=""
+            />
+            <ConversationHeader.Actions>
+              <Button onClick={onClose}>Close</Button>
+            </ConversationHeader.Actions>
+          </ConversationHeader>
+          
+          <MessageList 
+            typingIndicator={isTyping ? <TypingIndicator content="Assistant is typing" /> : null}
+          >
+            {messages.map(msg => (
+              <Message 
+                key={msg.id} 
+                model={msg}
               >
-                {messages.map(msg => (
-                  <Message 
-                    key={msg.id} 
-                    model={msg}
-                  >
-                    {msg.direction === "incoming" && (
-                      <Avatar 
-                        src={getCurrentAvatarUrl()}
-                        name="AI Assistant"
-                        onError={handleImageError}
-                      />
-                    )}
-                  </Message>
-                ))}
-              </MessageList>
-              
-              <MessageInput 
-                placeholder="Type message here..."
-                value={inputMessage}
-                onChange={val => setInputMessage(val)}
-                onSend={handleSendMessage}
-                attachButton={false}
-              />
-            </ChatContainer>
-          </MainContainer>
-        </div>
-      )}
+                {msg.direction === "incoming" && (
+                  <Avatar 
+                    src={getCurrentAvatarUrl()}
+                    name={theme?.name || "AI Assistant"}
+                    onError={handleImageError}
+                  />
+                )}
+              </Message>
+            ))}
+          </MessageList>
+          
+          <MessageInput 
+            placeholder="Type message here..."
+            value={inputMessage}
+            onChange={val => setInputMessage(val)}
+            onSend={handleSendMessage}
+            attachButton={false}
+          />
+        </ChatContainer>
+      </MainContainer>
     </div>
   );
 };

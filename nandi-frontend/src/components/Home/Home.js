@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
-import MarsChat from '../MarsChat/MarsChat';
+import ChatManager from '../Chat/ChatManager';
 
 function Home() {
     return (
@@ -40,7 +40,7 @@ function Home() {
                 </div>
             </div>
             
-            <MarsChat />
+            <ChatManager />
         </div>
     );
 }
