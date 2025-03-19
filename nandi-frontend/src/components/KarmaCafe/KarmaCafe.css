@@ -98,6 +98,9 @@
   gap: 10px;
   padding: 10px 20px;
   border-top: 1px solid #f4e4d0;
+  background-color: #f9f5f0;
+  position: relative;
+  z-index: 5;
 }
 
 .input-field {
@@ -127,6 +130,7 @@
   font-weight: 500;
   transition: background-color 0.2s;
   font-size: 14px;
+  min-width: 70px;
 }
 
 .send-btn:hover:not(:disabled) {
@@ -136,6 +140,26 @@
 .send-btn:disabled {
   background-color: rgba(244, 164, 96, 0.5);
   cursor: not-allowed;
+}
+
+.clear-btn {
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  width: 36px;
+  height: 36px;
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 16px;
+  color: #b17d4a;
+}
+
+.clear-btn:hover {
+  background-color: #f9f9f9;
 }
 
 .loading-indicator {
@@ -388,25 +412,27 @@
 
 /* Position the delete button */
 .delete-btn {
-  position: relative;
+  position: static;
 }
 
-/* Mobile responsiveness */
+/* Improved Mobile responsiveness */
 @media (max-width: 768px) {
   .karmacafe {
     max-width: 100%;
     height: auto;
     min-height: 90vh;
     margin: 0;
+    border-radius: 0;
   }
 
   .card-header {
-    padding: 10px 15px;
+    padding: 12px 15px;
   }
 
   .chat-area {
     margin: 0 10px;
     padding: 10px 15px;
+    height: 55vh; /* Fixed height for better mobile layout */
   }
 
   .chat-bubble {
@@ -416,15 +442,34 @@
   }
 
   .input-area {
-    padding: 10px 15px;
+    padding: 12px 15px;
+    position: sticky; /* Make input area stick to bottom */
+    bottom: 0;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
   }
 
   .input-field {
-    padding: 8px 12px;
+    padding: 10px;
+    border-radius: 18px;
+    font-size: 16px; /* Larger font for better readability */
+    -webkit-appearance: none; /* Fix iOS styling */
   }
 
   .send-btn {
     padding: 8px 15px;
+    min-width: 60px;
+    height: 40px; /* Taller button for easier tapping */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .clear-btn {
+    width: 40px;
+    height: 40px;
+    margin-left: 8px;
   }
 
   .theme-buttons {
@@ -432,17 +477,26 @@
   }
 
   .theme-button {
-    padding: 5px 12px;
-    font-size: 14px;
+    padding: 7px 14px; /* Larger touch target */
+    min-width: 80px; /* Minimum width for better tapping */
+    text-align: center;
+    font-size: 15px;
+  }
+  
+  /* Improve chat action buttons for touch */
+  .action-button {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
   }
 }
 
 @media (max-width: 480px) {
   .karmacafe {
     min-height: 95vh;
-    border-radius: 0;
   }
 
+  /* Adjust header for very small screens */
   .card-header h2 {
     font-size: 16px;
   }
@@ -458,6 +512,12 @@
     padding: 3px 8px;
   }
 
+  /* Make chat more prominent on small screens */
+  .chat-area {
+    margin: 0 8px;
+    height: 60vh;
+  }
+
   .chat-bubble {
     font-size: 14px;
     padding: 10px 12px;
@@ -468,8 +528,8 @@
   }
 
   .action-button {
-    width: 25px;
-    height: 25px;
+    width: 32px;
+    height: 32px;
     font-size: 14px;
   }
 
@@ -480,5 +540,27 @@
   /* Hide home button on very small screens */
   .floating-controls {
     display: none;
+  }
+  
+  .clear-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+  
+  /* Make chat area not get hidden under navbar */
+  .chat-area {
+    padding-bottom: 20px;
+  }
+  
+  /* Ensure input is always visible */
+  .input-area {
+    padding: 10px;
+    background-color: #f9f5f0;
+    z-index: 100;
+    position: fixed;
+    bottom: 60px; /* Position above the navbar */
+    left: 0;
+    right: 0;
   }
 }

@@ -1,6 +1,5 @@
 // src/components/KarmaCafe/KarmaCafe.js
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import './KarmaCafe.css';
 
 // Main KarmaCafe component
@@ -92,14 +91,7 @@ const KarmaCafe = () => {
         <div className="xp-tracker">Avatar | ★ 40 XP | Level 2</div>
       </div>
       
-      {/* Floating Controls - remove trash button, keep home button */}
-      <div className="floating-controls">
-        <Link to="/" className="floating-btn home-btn" title="Back Home">
-          🏠
-        </Link>
-      </div>
-      
-      {/* Theme selector with delete button */}
+      {/* Theme selector without delete button */}
       <div className="theme-selector-container">
         <div className="theme-buttons">
           {Object.keys(themeInfo).map((theme) => (
@@ -111,13 +103,6 @@ const KarmaCafe = () => {
               {themeInfo[theme].title}
             </button>
           ))}
-          <button 
-            className="theme-button delete-btn" 
-            onClick={handleClearChat}
-            title="Clear Chat"
-          >
-            🗑️
-          </button>
         </div>
       </div>
       
@@ -162,6 +147,13 @@ const KarmaCafe = () => {
           disabled={isLoading || !inputText.trim()}
         >
           {isLoading ? "..." : "Send"}
+        </button>
+        <button 
+          className="clear-btn" 
+          onClick={handleClearChat}
+          title="Clear Chat"
+        >
+          🗑️
         </button>
       </div>
     </div>
