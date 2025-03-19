@@ -2,33 +2,47 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
+import MarsChat from '../MarsChat/MarsChat';
 
-const Home = () => {
+function Home() {
     return (
-        <div className="card home">
-            <div className="card-header">
-                <div className="text-avatar">N</div>
-                <h2>Welcome to Nandi!</h2>
-                <div className="xp-tracker">Avatar | ★ 40 XP | Level 2</div>
-            </div>
-            <p>Your thoughtful guide to daily growth.</p>
-            <div className="button-container">
-                <Link to="/karma" className="button karmacafe-button">Visit KarmaCafe</Link>
-                <Link to="/soul" className="button soulquest-button">Start a Quest</Link>
-                <Link to="/pets" className="button wisdompets-button">Check WisdomPets</Link>
-                <div className="coming-soon-container">
-                    <div className="coming-soon-item">
-                        <span className="coming-soon-label">Daily Reflection</span>
-                        <span className="coming-soon-badge">Coming Soon</span>
-                    </div>
-                    <div className="coming-soon-item">
-                        <span className="coming-soon-label">Wisdom Library</span>
-                        <span className="coming-soon-badge">Coming Soon</span>
-                    </div>
+        <div className="home-container">
+            <header className="home-header">
+                <h1>Nandi Platform</h1>
+                <p className="home-tagline">Spiritual exploration and mindfulness applications</p>
+            </header>
+
+            <div className="home-content">
+                <div className="app-grid">
+                    <Link to="/karma" className="app-card">
+                        <div className="app-icon">🧘</div>
+                        <h2>KarmaCafe</h2>
+                        <p>Chat with philosophical avatars exploring spirituality and mindfulness</p>
+                    </Link>
+                    
+                    <Link to="/soul" className="app-card">
+                        <div className="app-icon">🌱</div>
+                        <h2>SoulQuest</h2>
+                        <p>Interactive journeys for personal growth and self-discovery</p>
+                    </Link>
+                    
+                    <Link to="/pets" className="app-card">
+                        <div className="app-icon">🐾</div>
+                        <h2>WisdomPets</h2>
+                        <p>Virtual companions that guide you through daily meditation</p>
+                    </Link>
+                    
+                    <Link to="/chat-test" className="app-card">
+                        <div className="app-icon">💬</div>
+                        <h2>Chat Test</h2>
+                        <p>Test the new Mars-style chat component</p>
+                    </Link>
                 </div>
             </div>
+            
+            <MarsChat />
         </div>
     );
-};
+}
 
 export default Home;

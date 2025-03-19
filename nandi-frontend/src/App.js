@@ -7,6 +7,7 @@ import Home from './components/Home/Home';
 import KarmaCafe from './components/KarmaCafe/KarmaCafe';
 import SoulQuest from './components/SoulQuest/SoulQuest';
 import WisdomPets from './components/WisdomPets/WisdomPets';
+import ChatTest from './components/ChatTest/ChatTest';
 import Navbar from './components/Layout/Navbar';
 import { logEnvConfig } from './utils/envConfig';
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="/karma/:avatarId" element={<KarmaCafe />} />
           <Route path="/soul/*" element={<SoulQuest />} />
           <Route path="/pets/*" element={<WisdomPets />} />
+          <Route path="/chat-test" element={<ChatTest />} />
         </Routes>
       </main>
 

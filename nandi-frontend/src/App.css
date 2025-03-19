@@ -40,6 +40,7 @@ main {
   justify-content: center;
   align-items: flex-start;
   padding: 20px 0;
+  padding-bottom: 100px; /* Add padding to ensure content isn't hidden by the navbar and chat button */
 }
 
 /* Add container for smooth transitions */
