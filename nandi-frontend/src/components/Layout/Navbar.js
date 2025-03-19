@@ -34,6 +34,13 @@ const Navbar = () => {
                 <span className="nav-icon">💬</span>
                 <span className="nav-label">Chat</span>
             </NavLink>
+            <NavLink
+                to="/clay-demo"
+                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            >
+                <span className="nav-icon">🎨</span>
+                <span className="nav-label">UI Demo</span>
+            </NavLink>
         </div>
     );
 };

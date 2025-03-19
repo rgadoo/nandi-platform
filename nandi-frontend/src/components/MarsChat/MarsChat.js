@@ -16,7 +16,7 @@ import {
 // Fallback avatar in case the image doesn't load
 const FALLBACK_AVATAR_URL = "https://ui-avatars.com/api/?name=AI&background=6b46c1&color=fff";
 
-const MarsChat = ({ theme, onClose }) => {
+const MarsChat = ({ theme, onClose, messages = null, onMessagesUpdate = null }) => {
   // State to track if the image loaded successfully
   const [avatarLoaded, setAvatarLoaded] = useState(true);
   
@@ -32,8 +32,8 @@ const MarsChat = ({ theme, onClose }) => {
     return theme?.avatarImage ? `${process.env.PUBLIC_URL}${theme.avatarImage}` : FALLBACK_AVATAR_URL;
   };
   
-  // State management
-  const [messages, setMessages] = useState([
+  // State management - use messages from props if provided, otherwise use local state
+  const [localMessages, setLocalMessages] = useState([
     {
       id: 1,
       message: `Hello! This is ${theme?.name || 'AI Assistant'}`,
@@ -44,6 +44,18 @@ const MarsChat = ({ theme, onClose }) => {
     }
   ]);
   
+  // Use messages from props if provided
+  const chatMessages = messages || localMessages;
+  
+  // Update function that works with either local state or via the callback
+  const updateMessages = (newMessages) => {
+    if (onMessagesUpdate) {
+      onMessagesUpdate(newMessages);
+    } else {
+      setLocalMessages(newMessages);
+    }
+  };
+  
   const [isTyping, setIsTyping] = useState(false);
   const [inputMessage, setInputMessage] = useState("");
 
@@ -51,7 +63,7 @@ const MarsChat = ({ theme, onClose }) => {
   const handleSendMessage = (message) => {
     // Add user message to chat
     const newUserMessage = {
-      id: messages.length + 1,
+      id: chatMessages.length + 1,
       message: message,
       sentTime: "just now",
       sender: "user",
@@ -59,7 +71,7 @@ const MarsChat = ({ theme, onClose }) => {
       position: "single"
     };
     
-    setMessages(prevMessages => [...prevMessages, newUserMessage]);
+    updateMessages([...chatMessages, newUserMessage]);
     setInputMessage("");
     
     // Simulate typing indicator
@@ -68,7 +80,7 @@ const MarsChat = ({ theme, onClose }) => {
     // Simulate response after delay
     setTimeout(() => {
       const systemResponse = {
-        id: messages.length + 2,
+        id: chatMessages.length + 2,
         message: getSystemResponse(message),
         sentTime: "just now",
         sender: "system",
@@ -76,7 +88,7 @@ const MarsChat = ({ theme, onClose }) => {
         position: "single"
       };
       
-      setMessages(prevMessages => [...prevMessages, systemResponse]);
+      updateMessages([...chatMessages, newUserMessage, systemResponse]);
       setIsTyping(false);
     }, 1500);
   };
@@ -161,7 +173,7 @@ const MarsChat = ({ theme, onClose }) => {
           <MessageList 
             typingIndicator={isTyping ? <TypingIndicator content="Assistant is typing" /> : null}
           >
-            {messages.map(msg => (
+            {chatMessages.map(msg => (
               <Message 
                 key={msg.id} 
                 model={msg}
