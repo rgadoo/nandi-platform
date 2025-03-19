@@ -78,7 +78,7 @@ nav ul li a.active {
 /* Mobile optimization */
 @media (max-width: 768px) {
   .App {
-    padding: 10px 10px 80px 10px;
+    padding: 0;
   }
   
   .App-header {
@@ -91,6 +91,30 @@ nav ul li a.active {
   }
   
   main {
-    padding: 10px 0;
+    padding: 0;
+  }
+  
+  nav {
+    padding: 5px 0;
+  }
+  
+  nav ul {
+    gap: 10px;
+  }
+  
+  nav ul li a {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  nav ul {
+    gap: 5px;
+  }
+  
+  nav ul li a {
+    padding: 4px 8px;
+    font-size: 12px;
   }
 }

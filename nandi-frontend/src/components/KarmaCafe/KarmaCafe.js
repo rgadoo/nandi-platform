@@ -92,21 +92,14 @@ const KarmaCafe = () => {
         <div className="xp-tracker">Avatar | ★ 40 XP | Level 2</div>
       </div>
       
-      {/* Floating Controls */}
+      {/* Floating Controls - remove trash button, keep home button */}
       <div className="floating-controls">
-        <button 
-          className="floating-btn" 
-          onClick={handleClearChat}
-          title="Clear Chat"
-        >
-          🗑️
-        </button>
         <Link to="/" className="floating-btn home-btn" title="Back Home">
           🏠
         </Link>
       </div>
       
-      {/* Theme selector - always visible */}
+      {/* Theme selector with delete button */}
       <div className="theme-selector-container">
         <div className="theme-buttons">
           {Object.keys(themeInfo).map((theme) => (
@@ -118,6 +111,13 @@ const KarmaCafe = () => {
               {themeInfo[theme].title}
             </button>
           ))}
+          <button 
+            className="theme-button delete-btn" 
+            onClick={handleClearChat}
+            title="Clear Chat"
+          >
+            🗑️
+          </button>
         </div>
       </div>
       
@@ -155,7 +155,6 @@ const KarmaCafe = () => {
           onKeyDown={handleKeyDown}
           placeholder="Type your question here..."
           disabled={isLoading}
-          autoFocus
         />
         <button
           className="send-btn"
