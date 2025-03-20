@@ -3,7 +3,7 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
 import ChatManager from '../Chat/ChatManager';
-import { FaHome, FaSearch, FaUserAlt, FaStar, FaDog, FaQuestion, FaPrayingHands } from 'react-icons/fa';
+import { FaHome, FaSearch, FaUserAlt, FaStar, FaDog, FaQuestion, FaPrayingHands, FaGem } from 'react-icons/fa';
 
 function Home() {
     // Reference to the ChatManager component
@@ -11,7 +11,6 @@ function Home() {
 
     // Function to handle opening a specific chat
     const openChat = (chatId) => {
-        // Check if chatManagerRef is set and it has the handleChatToggle method
         if (chatManagerRef.current && chatManagerRef.current.handleChatToggle) {
             chatManagerRef.current.handleChatToggle(chatId);
         } else {
@@ -36,8 +35,9 @@ function Home() {
                     </div>
                 </header>
 
+                {/* Progress Section */}
                 <section className="progress-section">
-                    <div className="progress-card clay">
+                    <div className="progress-card">
                         <div className="avatar">
                             <img src="/images/mascots/panda-avatar.png" alt="Panda mascot" onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=Panda&background=b17d4a&color=fff'; e.target.onerror = null; }} />
                         </div>
@@ -48,7 +48,7 @@ function Home() {
                         <div className="badge">24 min</div>
                     </div>
 
-                    <div className="progress-card clay">
+                    <div className="progress-card">
                         <div className="avatar">
                             <img src="/images/mascots/dog-avatar.png" alt="Dog mascot" onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=Dog&background=e07a3a&color=fff'; e.target.onerror = null; }} />
                         </div>
@@ -60,61 +60,83 @@ function Home() {
                     </div>
                 </section>
 
-                <div className="app-grid">
-                    <Link to="/soul" className="app-card clay">
-                        <div className="app-icon">
-                            <FaQuestion />
-                        </div>
-                        <h2>Soul Quest</h2>
-                        <p>Quiz</p>
-                        <div className="rating">
-                            <span className="star">★</span>
-                            <span className="star">★</span>
-                            <span className="star">★</span>
-                            <span className="star">★</span>
-                            <span className="star">★</span>
-                        </div>
-                    </Link>
-
-                    <Link to="/karma" className="app-card clay karma-cafe">
-                        <div className="app-icon">
-                            <FaDog />
-                        </div>
-                        <h2>KarmaCafe</h2>
-                        <p>Chat with wisdom</p>
-                    </Link>
+                {/* App Cards */}
+                <section className="app-cards">
+                    {/* Row 1 */}
+                    <div className="cards-row">
+                        <Link to="/soul" className="card">
+                            <div className="card-icon soul-quest-icon">
+                                <FaQuestion />
+                            </div>
+                            <div className="card-content">
+                                <h2>Soul Quest</h2>
+                                <p>Quiz</p>
+                                <div className="card-rating">
+                                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                                </div>
+                            </div>
+                        </Link>
+                        
+                        <Link to="/karma" className="card">
+                            <div className="card-icon karma-cafe-icon">
+                                <FaDog />
+                            </div>
+                            <div className="card-content">
+                                <h2>KarmaCafe</h2>
+                                <p>Chat with wisdom</p>
+                            </div>
+                        </Link>
+                    </div>
                     
-                    <Link to="/dharma" className="app-card clay dharma-path">
-                        <div className="app-icon">
-                            <FaPrayingHands />
-                        </div>
-                        <h2>Dharma Path</h2>
-                        <p>21-day spiritual journey</p>
-                    </Link>
+                    {/* Row 2 */}
+                    <div className="cards-row">
+                        <Link to="/dharma" className="card">
+                            <div className="card-icon dharma-path-icon">
+                                <FaPrayingHands />
+                            </div>
+                            <div className="card-content">
+                                <h2>Dharma Path</h2>
+                                <p>21-day spiritual journey</p>
+                            </div>
+                        </Link>
+                        
+                        <Link to="/treasure" className="card">
+                            <div className="card-icon treasure-icon">
+                                <FaGem />
+                            </div>
+                            <div className="card-content">
+                                <h2>Treasure</h2>
+                                <p>Discover ancient wisdom</p>
+                            </div>
+                        </Link>
+                    </div>
                     
-                    <Link to="/pets" className="app-card clay featured">
-                        <div className="app-icon">
-                            <FaDog />
-                        </div>
-                        <div>
-                            <h2>Wisdom Pets Deswas</h2>
-                            <p>Virtual companions for mindfulness</p>
-                        </div>
-                    </Link>
-                </div>
+                    {/* Full width featured card - wrapped in row container */}
+                    <div className="cards-row">
+                        <Link to="/pets" className="card featured-card">
+                            <div className="card-icon wisdom-pets-icon">
+                                <FaDog />
+                            </div>
+                            <div className="card-content">
+                                <h2>Wisdom Pets Deswas</h2>
+                                <p>Virtual companions for mindfulness</p>
+                            </div>
+                        </Link>
+                    </div>
+                </section>
             </div>
             
             {/* Side chat icons */}
             <div className="side-chat-icons">
-                <button className="chat-icon-button clay flower" onClick={() => openChat('karma')}>
+                <button className="chat-icon-button flower" onClick={() => openChat('karma')}>
                     <div className="chat-pet-icon"></div>
                 </button>
                 
-                <button className="chat-icon-button clay flower-white" onClick={() => openChat('wisdom')}>
+                <button className="chat-icon-button flower-white" onClick={() => openChat('wisdom')}>
                     <div className="chat-pet-icon"></div>
                 </button>
                 
-                <button className="chat-icon-button clay bear" onClick={() => openChat('meditation')}>
+                <button className="chat-icon-button bear" onClick={() => openChat('meditation')}>
                     <div className="chat-pet-icon"></div>
                 </button>
             </div>

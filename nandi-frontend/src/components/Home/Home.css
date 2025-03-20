@@ -8,6 +8,9 @@
   --highlight-color: #6b46c1;
   --text-dark: #5d4037;
   --text-light: #8d6e63;
+  --nandi-brown: #8B4513;
+  --nandi-light: #DEB887;
+  --nandi-accent: #D2691E;
 }
 
 body {
@@ -22,11 +25,9 @@ body {
   max-width: 100%;
   margin: 0 auto;
   padding: 0;
-  background-color: var(--primary-bg);
+  background-color: transparent;
   min-height: 100vh;
   position: relative;
-  background-color: transparent;
-  
 }
 
 /* Phone frame for design purposes */
@@ -65,7 +66,7 @@ body {
   align-items: center;
   margin-bottom: 15px;
   padding: 0;
-  margin-top: -30px; /* Pull up to overlap with status bar */
+  margin-top: -30px;
   position: relative;
   z-index: 2;
 }
@@ -115,7 +116,7 @@ body {
 
 /* Progress section */
 .progress-section {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   padding: 0 12px;
 }
 
@@ -170,98 +171,193 @@ body {
   font-weight: 600;
 }
 
-/* App grid */
-.app-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(4, auto);
-  gap: 12px;
-  margin-bottom: 15px;
+/* App cards section */
+.app-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
   padding: 0 12px;
+  margin-bottom: 60px;
+  box-sizing: border-box;
 }
 
-.app-card {
-  background-color: var(--card-bg);
+.cards-row {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Base card styles */
+.card {
+  background-color: var(--nandi-light);
   border-radius: 20px;
   padding: 15px;
   text-decoration: none;
   color: inherit;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.05),
-              -5px -5px 10px rgba(255, 255, 255, 0.5);
-  transition: transform 0.2s ease;
+  box-shadow: 5px 5px 15px rgba(139, 94, 60, 0.1),
+              -5px -5px 15px rgba(255, 255, 255, 0.5);
   display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-}
-
-.app-card:hover, .app-card:active {
-  transform: translateY(-2px);
-}
-
-.app-card.featured {
-  grid-column: span 2;
-  display: flex;
-  flex-direction: row;
   align-items: center;
-  background-color: #d1eef9;
+  height: 80px;
+  flex: 1 1 0; /* Equal width distribution */
+  transition: transform 0.2s ease;
+  box-sizing: border-box;
+  max-width: 50%;
+  position: relative;
+  padding-left: 75px; /* Increased padding to move text further from icon */
 }
 
-.app-card.karma-cafe {
-  background-color: #d1eef9;
+/* Ensure two cards per row take exactly 50% width minus the gap */
+.cards-row .card {
+  width: calc(50% - 7.5px);
+  max-width: calc(50% - 7.5px);
+  flex: 0 0 calc(50% - 7.5px);
 }
 
-.app-card.karma-cafe .app-icon {
-  background-color: #6b9ec3;
+/* Featured card row styles */
+.cards-row:last-child {
+  width: 100%;
 }
 
-.app-card.dharma-path .app-icon {
-  background-color: #b17d4a;
+/* Featured card styles */
+.featured-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 0 0 100% !important;
+  padding-left: 75px; /* Updated to match regular cards */
 }
 
-.app-card .app-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background-color: var(--accent-color);
+/* Card icons */
+.card-icon {
+  width: 46px;
+  height: 46px;
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 23px; /* Make icons circular */
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
   color: white;
   font-size: 20px;
+  box-shadow: 2px 2px 8px rgba(139, 94, 60, 0.2),
+              -2px -2px 8px rgba(255, 255, 255, 0.3);
+  z-index: 1; /* Ensure icons stay above text */
 }
 
-.app-card.featured .app-icon {
-  width: 60px;
-  height: 60px;
-  margin-right: 15px;
-  margin-bottom: 0;
-  background-color: #6b9ec3;
+/* Ensure consistent styling across all icon types */
+.soul-quest-icon,
+.karma-cafe-icon,
+.dharma-path-icon,
+.treasure-icon,
+.wisdom-pets-icon {
+  background-color: var(--nandi-brown);
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-.app-card h2 {
-  font-size: 16px;
+.dharma-path-icon,
+.treasure-icon {
+  background-color: var(--nandi-accent);
+}
+
+/* Card content */
+.card-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+  width: 100%;
+}
+
+.card h2 {
+  font-size: 15px;
   font-weight: 700;
-  margin: 0 0 5px 0;
+  margin: 0 0 3px 0;
   color: var(--text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.app-card p {
+.card p {
   font-size: 12px;
   color: var(--text-light);
   margin: 0;
+  line-height: 1.3;
 }
 
-.app-card .rating {
+/* Rating styles */
+.card-rating {
   display: flex;
-  margin-top: 10px;
+  gap: 2px;
+  margin-top: 4px;
 }
 
-.app-card .rating .star {
+.card-rating span {
   color: #ffc107;
   font-size: 12px;
-  margin-right: 2px;
+}
+
+/* Side chat icons */
+.side-chat-icons {
+  position: fixed;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 100;
+}
+
+.chat-icon-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+  background-color: var(--nandi-brown);
+  transition: transform 0.3s ease;
+  box-shadow: 5px 5px 15px rgba(139, 94, 60, 0.1),
+              -5px -5px 15px rgba(255, 255, 255, 0.5);
+}
+
+.chat-icon-button:hover {
+  transform: translateY(-2px);
+}
+
+.chat-icon-button:active {
+  transform: translateY(1px);
+}
+
+.chat-pet-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: var(--nandi-light);
+}
+
+/* Specific icons */
+.chat-icon-button.flower {
+  background-color: var(--nandi-accent);
+}
+
+.chat-icon-button.flower-white {
+  background-color: var(--nandi-brown);
+}
+
+.chat-icon-button.bear {
+  background-color: var(--nandi-accent);
 }
 
 /* Bottom navigation */
@@ -318,192 +414,6 @@ body {
   }
 }
 
-/* Clay-specific styles */
-.clay {
-  background-color: var(--card-bg);
-  border-radius: 24px;
-  box-shadow: 
-    20px 20px 60px rgba(139, 94, 60, 0.1),
-    -20px -20px 60px rgba(255, 255, 255, 0.8),
-    inset 4px 4px 20px rgba(255, 255, 255, 0.5),
-    inset -8px -8px 20px rgba(139, 94, 60, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.clay-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 15px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  color: var(--text-dark);
-  background-color: var(--card-bg);
-  box-shadow: 
-    5px 5px 15px rgba(139, 94, 60, 0.15),
-    -5px -5px 15px rgba(255, 255, 255, 0.7),
-    inset 0 0 0 rgba(139, 94, 60, 0),
-    inset 0 0 0 rgba(255, 255, 255, 0);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.clay-button:active {
-  transform: translateY(2px);
-  box-shadow: 
-    0 0 0 rgba(139, 94, 60, 0),
-    0 0 0 rgba(255, 255, 255, 0),
-    inset 5px 5px 10px rgba(139, 94, 60, 0.1),
-    inset -5px -5px 10px rgba(255, 255, 255, 0.7);
-}
-
-/* Override any existing styles that might conflict */
-.home-content {
-  padding-bottom: 70px; /* Make room for the fixed navbar */
-}
-
-/* KarmaCafe Card styles */
-.karmacafe-card {
-  grid-row: span 2;
-  height: auto;
-  background-color: #fafaf0 !important;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding-bottom: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-}
-
-.chat-bubbles-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  margin-top: 15px;
-  width: 100%;
-}
-
-.chat-bubble {
-  width: 80%;
-  padding: 15px;
-  border-radius: 18px;
-  color: white;
-  font-weight: 600;
-  font-size: 14px;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 
-    4px 4px 8px rgba(0, 0, 0, 0.1),
-    -4px -4px 8px rgba(255, 255, 255, 0.5),
-    inset 1px 1px 2px rgba(255, 255, 255, 0.3);
-}
-
-.chat-bubble:hover {
-  transform: translateY(-2px) scale(1.02);
-}
-
-.chat-bubble:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 
-    2px 2px 4px rgba(0, 0, 0, 0.1),
-    -2px -2px 4px rgba(255, 255, 255, 0.3),
-    inset 2px 2px 4px rgba(0, 0, 0, 0.1),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.2);
-}
-
-.chat-bubble svg {
-  font-size: 16px;
-}
-
-/* Chat icon buttons styling */
-.side-chat-icons {
-  position: fixed;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  z-index: 100;
-}
-
-.chat-icon-button {
-  width: 60px;
-  height: 60px;
-  border-radius: 18px;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  position: relative;
-  background-color: #8B4513;
-  transition: transform 0.3s ease;
-}
-
-.chat-icon-button:hover {
-  transform: translateY(-2px);
-}
-
-.chat-icon-button:active {
-  transform: translateY(1px);
-}
-
-.chat-pet-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
-/* Specific icons */
-.chat-icon-button.flower {
-  background-color: #8D6E63;
-}
-
-.chat-icon-button.flower .chat-pet-icon {
-  background-color: #FFCC80;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23FFA000' d='M12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z'/%3E%3C/svg%3E");
-}
-
-.chat-icon-button.flower-white {
-  background-color: #A1887F;
-}
-
-.chat-icon-button.flower-white .chat-pet-icon {
-  background-color: #FFF8E1;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23FFB300' d='M12,2C17.52,2 22,6.48 22,12C22,17.52 17.52,22 12,22C6.48,22 2,17.52 2,12C2,6.48 6.48,2 12,2M12,5C9.24,5 7,7.24 7,10C7,11.38 7.5,12.63 8.4,13.6L12,17.2L15.6,13.6C16.5,12.63 17,11.38 17,10C17,7.24 14.76,5 12,5Z'/%3E%3C/svg%3E");
-}
-
-.chat-icon-button.bear {
-  background-color: #795548;
-}
-
-.chat-icon-button.bear .chat-pet-icon {
-  background-color: #EFEBE9;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%235D4037' d='M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2M12 5.5C14.39 5.5 16.35 7.4 16.35 9.7C16.35 11.1 15.8 12.4 14.9 13.2C14.7 13.4 14.5 13.7 14.5 14C14.5 14.3 14.7 14.5 14.9 14.7C15.3 15.1 15.5 15.5 15.5 16C15.5 17.1 14.6 18 13.5 18H10.5C9.4 18 8.5 17.1 8.5 16C8.5 15.5 8.7 15 9.1 14.7C9.3 14.5 9.5 14.2 9.5 14C9.5 13.7 9.3 13.4 9.1 13.2C8.2 12.4 7.65 11.1 7.65 9.7C7.65 7.4 9.61 5.5 12 5.5M10 14C10 14.6 9.6 15 9 15C8.4 15 8 14.6 8 14C8 13.4 8.4 13 9 13C9.6 13 10 13.4 10 14M16 14C16 14.6 15.6 15 15 15C14.4 15 14 14.6 14 14C14 13.4 14.4 13 15 13C15.6 13 16 13.4 16 14Z'/%3E%3C/svg%3E");
-}
-
-/* For the phone frame, make sure icons are inside */
-.phone-frame .side-chat-icons {
-  right: 10px;
-  height: 100%;
-  top: 50%;
-  transform: translateY(-45%);
-}
-
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .side-chat-icons {
     right: 5px;
@@ -518,4 +428,9 @@ body {
     width: 35px;
     height: 35px;
   }
+}
+
+/* Card hover effects */
+.card:hover {
+  transform: translateY(-2px);
 }
