@@ -1,11 +1,23 @@
 // src/components/Home/Home.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
 import ChatDemo from '../Chat/ChatDemo';
 import { FaHome, FaSearch, FaUserAlt, FaDog, FaQuestion, FaPrayingHands, FaGem } from 'react-icons/fa';
 
 function Home() {
+    // Animation state
+    const [breatheState, setBreatheState] = useState('inhale');
+    
+    // Breathe animation effect
+    useEffect(() => {
+        const breatheInterval = setInterval(() => {
+            setBreatheState(prevState => prevState === 'inhale' ? 'exhale' : 'inhale');
+        }, 4000); // 4 seconds per breath cycle
+        
+        return () => clearInterval(breatheInterval);
+    }, []);
+
     return (
         <div className="home-container">
             {/* Decorative elements for desktop */}
@@ -27,12 +39,22 @@ function Home() {
 
             <div className="phone-frame">
                 <header className="home-header">
+                    {/* Breathe Bubble - Left Side */}
+                    <div className="breathe-bubble-container">
+                        <div className={`breathe-bubble ${breatheState}`}>
+                            <div className="breathe-text">breathe</div>
+                        </div>
+                    </div>
+                    
                     <div className="nandi-branding">
                         <h1 className="app-title">Nandi</h1>
                         <div className="nandi-logo">
                             <img src="/images/nandi-main.png" alt="Nandi" />
                         </div>
                     </div>
+                    
+                    {/* Empty spacer for balance */}
+                    <div className="breathe-bubble-container"></div>
                 </header>
 
                 {/* Progress Section */}

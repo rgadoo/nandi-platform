@@ -52,21 +52,26 @@ body {
 
 /* Header styles */
 .home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding-top: 20px; /* Increased padding to make up for the removed status bar */
   padding-bottom: 15px;
   text-align: center;
   margin-bottom: 15px;
-  padding: 0;
+  padding: 15px 10px;
   margin-top: 20px; /* Added top margin to create space at the top */
   position: relative;
   z-index: 2;
 }
 
+/* Nandi branding */
 .nandi-branding {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
+  justify-content: center;
+  flex: 1;
 }
 
 .app-title {
@@ -571,5 +576,96 @@ body {
   .decorative-lotus {
     width: 180px;
     height: 180px;
+  }
+}
+
+/* Breathe Bubble */
+.breathe-bubble-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  margin-right: 10px;
+}
+
+.breathe-bubble {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 30% 30%, 
+    rgba(210, 105, 30, 0.7) 0%, 
+    rgba(139, 69, 19, 0.5) 50%, 
+    rgba(70, 35, 10, 0.3) 100%);
+  position: relative;
+  transition: transform 4s ease-in-out, background 4s ease-in-out, box-shadow 4s ease-in-out;
+  box-shadow: 
+    inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.4),
+    0 0 15px rgba(210, 105, 30, 0.3);
+}
+
+.breathe-bubble.inhale {
+  transform: scale(1);
+  background: radial-gradient(circle at 30% 30%, 
+    rgba(210, 105, 30, 0.7) 0%, 
+    rgba(139, 69, 19, 0.5) 50%, 
+    rgba(70, 35, 10, 0.3) 100%);
+  box-shadow: 
+    inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.4),
+    0 0 15px rgba(210, 105, 30, 0.3);
+}
+
+.breathe-bubble.exhale {
+  transform: scale(0.8);
+  background: radial-gradient(circle at 30% 30%, 
+    rgba(177, 125, 74, 0.7) 0%, 
+    rgba(116, 82, 48, 0.5) 50%, 
+    rgba(58, 41, 24, 0.3) 100%);
+  box-shadow: 
+    inset 2px 2px 4px rgba(255, 255, 255, 0.15),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(177, 125, 74, 0.25);
+}
+
+.breathe-text {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  transition: transform 4s ease-in-out, opacity 4s ease-in-out;
+  opacity: 0.9;
+}
+
+.inhale .breathe-text {
+  transform: scale(1);
+  opacity: 0.9;
+}
+
+.exhale .breathe-text {
+  transform: scale(0.9);
+  opacity: 0.7;
+}
+
+/* Desktop styles for breathe bubble */
+@media (min-width: 1024px) {
+  .breathe-bubble-container {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .breathe-bubble {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .breathe-text {
+    font-size: 14px;
   }
 }
