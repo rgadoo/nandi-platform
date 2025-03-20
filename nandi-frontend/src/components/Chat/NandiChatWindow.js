@@ -37,9 +37,6 @@ const NandiChatWindow = ({ theme, onClose, messages = [], onMessagesUpdate }) =>
           // Try to force the virtual keyboard to show by focusing again after a brief delay
           setTimeout(() => {
             inputRef.current?.focus();
-            
-            // On iOS, we might need to scroll the window
-            window.scrollTo(0, document.body.scrollHeight);
           }, 300);
         }
       }
