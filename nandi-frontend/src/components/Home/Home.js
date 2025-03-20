@@ -3,17 +3,29 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
 import ChatDemo from '../Chat/ChatDemo';
-import { FaHome, FaSearch, FaUserAlt, FaStar, FaDog, FaQuestion, FaPrayingHands, FaGem } from 'react-icons/fa';
+import { FaHome, FaSearch, FaUserAlt, FaDog, FaQuestion, FaPrayingHands, FaGem } from 'react-icons/fa';
 
 function Home() {
     return (
         <div className="home-container">
-            <div className="phone-frame">
-                <div className="status-bar">
-                    <div className="time">1:20</div>
-                    <div className="battery">93%</div>
+            {/* Decorative elements for desktop */}
+            <div className="decorative-elements">
+                {/* Left side decorations */}
+                <div className="left-decoration">
+                    <div className="decorative-circle float-animation"></div>
+                    <div className="decorative-mandala float-animation-reverse"></div>
+                    <div className="decorative-circle float-animation-slow glow-effect"></div>
                 </div>
+                
+                {/* Right side decorations */}
+                <div className="right-decoration">
+                    <div className="decorative-lotus float-animation-slow"></div>
+                    <div className="decorative-circle float-animation glow-effect"></div>
+                    <div className="decorative-mandala float-animation-reverse"></div>
+                </div>
+            </div>
 
+            <div className="phone-frame">
                 <header className="home-header">
                     <div className="nandi-branding">
                         <h1 className="app-title">Nandi</h1>
@@ -112,32 +124,26 @@ function Home() {
                         </Link>
                     </div>
                 </section>
+
+                {/* Bottom Navigation */}
+                <nav className="bottom-nav">
+                    <div className="nav-item active">
+                        <FaHome />
+                        <span>Home</span>
+                    </div>
+                    <div className="nav-item">
+                        <FaSearch />
+                        <span>Explore</span>
+                    </div>
+                    <div className="nav-item">
+                        <FaUserAlt />
+                        <span>Profile</span>
+                    </div>
+                </nav>
             </div>
             
-            {/* Use our new ChatDemo component */}
+            {/* Chat component */}
             <ChatDemo />
-            
-            <nav className="bottom-nav">
-                <Link to="/" className="nav-item active">
-                    <span className="icon"><FaHome /></span>
-                    <span>Home</span>
-                </Link>
-                
-                <Link to="#" className="nav-item">
-                    <span className="icon"><FaSearch /></span>
-                    <span>Explore</span>
-                </Link>
-                
-                <Link to="#" className="nav-item">
-                    <span className="icon"><FaStar /></span>
-                    <span>Favorites</span>
-                </Link>
-                
-                <Link to="#" className="nav-item">
-                    <span className="icon"><FaUserAlt /></span>
-                    <span>Profile</span>
-                </Link>
-            </nav>
         </div>
     );
 }
