@@ -1,23 +1,11 @@
 // src/components/Home/Home.js
-import React, { useRef } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
-import ChatManager from '../Chat/ChatManager';
+import ChatDemo from '../Chat/ChatDemo';
 import { FaHome, FaSearch, FaUserAlt, FaStar, FaDog, FaQuestion, FaPrayingHands, FaGem } from 'react-icons/fa';
 
 function Home() {
-    // Reference to the ChatManager component
-    const chatManagerRef = useRef(null);
-
-    // Function to handle opening a specific chat
-    const openChat = (chatId) => {
-        if (chatManagerRef.current && chatManagerRef.current.handleChatToggle) {
-            chatManagerRef.current.handleChatToggle(chatId);
-        } else {
-            console.log(`Chat manager not ready yet. Unable to open: ${chatId}`);
-        }
-    };
-
     return (
         <div className="home-container">
             <div className="phone-frame">
@@ -126,20 +114,8 @@ function Home() {
                 </section>
             </div>
             
-            {/* Side chat icons */}
-            <div className="side-chat-icons">
-                <button className="chat-icon-button flower" onClick={() => openChat('karma')}>
-                    <div className="chat-pet-icon"></div>
-                </button>
-                
-                <button className="chat-icon-button flower-white" onClick={() => openChat('wisdom')}>
-                    <div className="chat-pet-icon"></div>
-                </button>
-                
-                <button className="chat-icon-button bear" onClick={() => openChat('meditation')}>
-                    <div className="chat-pet-icon"></div>
-                </button>
-            </div>
+            {/* Use our new ChatDemo component */}
+            <ChatDemo />
             
             <nav className="bottom-nav">
                 <Link to="/" className="nav-item active">
@@ -162,8 +138,6 @@ function Home() {
                     <span>Profile</span>
                 </Link>
             </nav>
-            
-            <ChatManager ref={chatManagerRef} />
         </div>
     );
 }

@@ -1,35 +1,38 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import MarsChat from '../MarsChat/MarsChat';
-import { FaQuestionCircle, FaGraduationCap, FaPrayingHands } from 'react-icons/fa';
+import NandiChatWindow from './NandiChatWindow';
+import { FaBalanceScale, FaRoute, FaYinYang } from 'react-icons/fa';
 
-// Define the chat themes
+// Define the chat themes with updated colors and icons
 const CHAT_THEMES = [
   {
     id: 'karma',
     name: 'Karma Chat',
     apiEndpoint: '/api/karma',
-    icon: <FaQuestionCircle />,
-    color: '#6b46c1',
+    icon: <FaBalanceScale />,
+    color: '#FF9800', // Vibrant Orange
     position: 'bottom-right',
-    avatarImage: '/images/chat-avatars/karma-avatar.png'
+    description: 'Action & Consequence',
+    avatarImage: '/images/chat-avatars/karma-avatar.png' // Path to karma avatar image
   },
   {
-    id: 'wisdom',
-    name: 'Wisdom Chat',
-    apiEndpoint: '/api/wisdom',
-    icon: <FaGraduationCap />,
-    color: '#3182ce',
+    id: 'dharma',
+    name: 'Dharma Chat',
+    apiEndpoint: '/api/dharma',
+    icon: <FaRoute />,
+    color: '#4CAF50', // Deep Green
     position: 'bottom-left',
-    avatarImage: '/images/chat-avatars/wisdom-avatar.png'
+    description: 'Purpose & Guidance',
+    avatarImage: '/images/chat-avatars/wisdom-avatar.png' // Updated to match existing file
   },
   {
-    id: 'meditation',
-    name: 'Meditation Chat',
-    apiEndpoint: '/api/meditation',
-    icon: <FaPrayingHands />,
-    color: '#38a169',
+    id: 'atma',
+    name: 'Atma Chat',
+    apiEndpoint: '/api/atma',
+    icon: <FaYinYang />,
+    color: '#3F51B5', // Deep Indigo
     position: 'top-right',
-    avatarImage: '/images/chat-avatars/meditation-avatar.png'
+    description: 'Mindfulness & Inner Peace',
+    avatarImage: '/images/chat-avatars/meditation-avatar.png' // Updated to match existing file
   }
 ];
 
@@ -93,7 +96,7 @@ const ChatManager = forwardRef((props, ref) => {
     <div className="chat-manager">
       {/* Render the active chat window if there is one */}
       {activeChat && (
-        <MarsChat
+        <NandiChatWindow
           theme={getActiveChatTheme()}
           onClose={() => setActiveChat(null)}
           messages={messageHistories[activeChat] || []}

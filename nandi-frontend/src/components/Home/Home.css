@@ -317,10 +317,10 @@ body {
 }
 
 .chat-icon-button {
-  width: 60px;
-  height: 60px;
-  border-radius: 18px;
-  border: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 23px; /* Make icon circular like card icons */
+  border: 2px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -328,13 +328,15 @@ body {
   padding: 0;
   position: relative;
   background-color: var(--nandi-brown);
-  transition: transform 0.3s ease;
-  box-shadow: 5px 5px 15px rgba(139, 94, 60, 0.1),
-              -5px -5px 15px rgba(255, 255, 255, 0.5);
+  opacity: 0.5; /* Add semi-transparency */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4),
+              -2px -2px 8px rgba(255, 255, 255, 0.05);
 }
 
 .chat-icon-button:hover {
   transform: translateY(-2px);
+  opacity: 1; /* Full opacity on hover */
 }
 
 .chat-icon-button:active {
@@ -342,8 +344,8 @@ body {
 }
 
 .chat-pet-icon {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background-position: center;
   background-size: cover;
@@ -453,4 +455,16 @@ body {
 /* Card hover effects */
 .card:hover {
   transform: translateY(-2px);
+}
+
+/* Hide bottom nav when chat is active on mobile */
+.chat-active .bottom-nav {
+  display: none;
+}
+
+/* Only apply this on mobile devices */
+@media (min-width: 769px) {
+  .chat-active .bottom-nav {
+    display: flex; /* Keep nav visible on desktop */
+  }
 }
