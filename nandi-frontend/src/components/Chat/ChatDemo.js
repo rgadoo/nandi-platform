@@ -82,6 +82,18 @@ const ChatDemo = () => {
     document.body.style.overflow = chatId ? 'hidden' : '';
   };
 
+  // Create a dedicated function for closing the chat to ensure proper cleanup
+  const handleCloseChat = () => {
+    // Set active chat to null
+    setActiveChat(null);
+    
+    // Remove the chat-active class from the body
+    document.body.classList.remove('chat-active');
+    
+    // Reset overflow style
+    document.body.style.overflow = '';
+  };
+
   // Get active chat theme
   const getActiveChatTheme = () => {
     return CHAT_THEMES.find(theme => theme.id === activeChat);
@@ -107,7 +119,7 @@ const ChatDemo = () => {
       {activeChat && (
         <NandiChatWindow
           theme={getActiveChatTheme()}
-          onClose={() => handleChatToggle(null)} // Use the handler to close properly
+          onClose={handleCloseChat} // Use the enhanced close handler
           messages={messageHistories[activeChat] || []}
           onMessagesUpdate={handleMessagesUpdate}
         />
