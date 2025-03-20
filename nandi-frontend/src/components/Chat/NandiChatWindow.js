@@ -158,6 +158,7 @@ const NandiChatWindow = ({ theme, onClose, messages = [], onMessagesUpdate }) =>
     <div 
       className="nandi-chat-window"
       onClick={focusInputField} // Add click handler to focus input
+      data-theme={theme?.id || 'default'} // Add theme identifier for CSS targeting
     >
       {/* Chat Header */}
       <div 

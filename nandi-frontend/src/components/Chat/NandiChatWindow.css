@@ -34,10 +34,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px;
+  padding: 10px 15px; /* Reduced vertical padding */
+  height: 50px; /* Fixed height as per feedback */
+  box-sizing: border-box;
   background-color: rgba(177, 125, 74, 0.5); /* More transparent header */
   color: white;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Atma Chat specific header (blue) - applying custom height */
+.nandi-chat-window[data-theme="atma"] .chat-header {
+  height: 50px; /* Fixed height for Atma chat specifically */
+  background-color: rgba(63, 81, 181, 0.5); /* Blue background for Atma with transparency */
 }
 
 .chat-avatar {
@@ -203,7 +211,9 @@
 .message-content {
   display: flex;
   flex-direction: column;
-  max-width: 75%;
+  max-width: 80%; /* Consistent max width for all messages */
+  width: fit-content; /* Allow bubbles to size based on content */
+  margin-bottom: 2px; /* Add space before timestamp */
 }
 
 .message-bubble {
@@ -215,23 +225,42 @@
   box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2),
               -2px -2px 6px rgba(255, 255, 255, 0.05);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  /* Add animation for new messages */
+  animation: message-fade-in 0.3s ease-out forwards;
+}
+
+/* Animation for new messages */
+@keyframes message-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .incoming .message-bubble {
   background-color: rgba(0, 0, 0, 0.95); /* Pure black background */
   color: white; /* White text */
   border-bottom-left-radius: 4px;
+  align-self: flex-start; /* Align to the left */
+  max-width: 100%; /* Use the full width of the message content */
 }
 
 .outgoing .message-bubble {
   background-color: rgba(255, 255, 255, 0.85);
   color: #000000;
   border-bottom-right-radius: 4px;
+  align-self: flex-end; /* Align to the right */
+  max-width: 100%; /* Use the full width of the message content */
 }
 
 .message-time {
   font-size: 10px;
-  margin-top: 4px;
+  margin-top: 3px; /* Increased spacing after message */
+  padding-bottom: 3px; /* Additional padding below time */
   color: rgba(255, 255, 255, 0.6);
   opacity: 0.8;
   align-self: flex-end;
@@ -239,10 +268,12 @@
 
 .outgoing .message-time {
   align-self: flex-end;
+  margin-right: 2px; /* Slight right margin */
 }
 
 .incoming .message-time {
   align-self: flex-start;
+  margin-left: 2px; /* Slight left margin */
 }
 
 /* Typing indicator */
@@ -385,7 +416,8 @@
   
   .chat-header {
     background-color: rgba(177, 125, 74, 0.5); /* Consistent transparency on mobile */
-    padding: 15px; /* Ensure consistent padding */
+    padding: 10px 15px; /* Maintain reduced padding */
+    height: 50px; /* Keep consistent height */
     position: relative; /* Ensure proper positioning context */
   }
   
@@ -434,6 +466,16 @@
   .message-bubble {
     font-size: 18px; /* Even larger on mobile */
     padding: 12px 16px; /* More padding on mobile */
+  }
+  
+  /* Maintain consistent message content width on mobile */
+  .message-content {
+    max-width: 80%; /* Keep consistent max width */
+  }
+  
+  /* Add more visual separation between messages on mobile */
+  .chat-message {
+    margin-bottom: 8px; /* Increased space between message groups */
   }
   
   /* Make sure input is easily accessible on mobile */
