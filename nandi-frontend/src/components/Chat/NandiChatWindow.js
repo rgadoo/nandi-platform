@@ -167,16 +167,19 @@ const NandiChatWindow = ({ theme, onClose, messages = [], onMessagesUpdate }) =>
         <div className="chat-header-info">
           <h3>{theme?.name || 'Nandi Chat'}</h3>
         </div>
-        <button 
-          className="chat-close-button" 
-          onClick={(e) => {
-            e.stopPropagation(); // Stop click from bubbling to parent
-            e.preventDefault(); // Prevent any default action
-            onClose(); // Call the close handler
-          }}
-        >
-          ✕
-        </button>
+        <div className="chat-button-container">
+          <button 
+            className="chat-close-button" 
+            onClick={(e) => {
+              e.stopPropagation(); // Stop click from bubbling to parent
+              e.preventDefault(); // Prevent any default action
+              onClose(); // Call the close handler
+            }}
+            aria-label="Close chat"
+          >
+            ✕
+          </button>
+        </div>
       </div>
 
       {/* Messages Container */}

@@ -28,7 +28,7 @@ The KarmaCafe component has been replaced by the new multi-themed Chat system, w
 ## Migration
 Any code that was previously using KarmaCafe should be updated to use the new Chat system components:
 - `src/components/Chat/ChatManager.js`
-- `src/components/MarsChat/MarsChat.js`
+- `src/components/Chat/NandiChatWindow.js`
 
 ## Routes
 The following routes have been removed:

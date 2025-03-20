@@ -84,7 +84,7 @@ const ChatManager = forwardRef((props, ref) => {
     return CHAT_THEMES.find(theme => theme.id === activeChat);
   };
   
-  // Handle message updates from the MarsChat component
+  // Handle message updates for this chat
   const handleMessagesUpdate = (chatId, messages) => {
     setMessageHistories(prev => ({
       ...prev,
