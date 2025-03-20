@@ -206,6 +206,26 @@ docker exec nandi-redis sh -c "redis-cli -a nandi_redis_password $*"
 exit $?
 ```
 
+### Redis Monitoring Script
+
+The `monitor-redis.sh` script provides a user-friendly way to inspect Redis cache contents:
+
+```bash
+# Monitor all Redis keys
+./monitor-redis.sh
+
+# Monitor keys matching a specific pattern
+./monitor-redis.sh "chat:karma:*"
+```
+
+This script shows:
+- All keys matching the pattern (or all keys if no pattern is provided)
+- The data type of each key
+- Time to live (TTL) for keys with expiration
+- Formatted values (with JSON pretty-printing for JSON strings)
+
+Running this script regularly can help you understand cache usage patterns and verify that keys are being set and expired as expected.
+
 ## Points Calculation
 
 The schema includes a PostgreSQL function to calculate points based on the implementation plan:
