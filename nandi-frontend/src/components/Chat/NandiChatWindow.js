@@ -160,31 +160,13 @@ const NandiChatWindow = ({ theme, onClose, messages = [], onMessagesUpdate }) =>
       onClick={focusInputField} // Add click handler to focus input
       data-theme={theme?.id || 'default'} // Add theme identifier for CSS targeting
     >
-      {/* Chat Header */}
-      <div 
-        className="chat-header"
-        style={{ backgroundColor: theme?.color || 'var(--nandi-brown)' }}
-      >
-        <div className="chat-header-info">
-          <h3>{theme?.name || 'Nandi Chat'}</h3>
-        </div>
-        <div className="chat-button-container">
-          <button 
-            className="chat-close-button" 
-            onClick={(e) => {
-              e.stopPropagation(); // Stop click from bubbling to parent
-              e.preventDefault(); // Prevent any default action
-              onClose(); // Call the close handler
-            }}
-            aria-label="Close chat"
-          >
-            ✕
-          </button>
-        </div>
-      </div>
-
-      {/* Messages Container */}
+      {/* Messages Container - adjusted to fill the space */}
       <div className="chat-messages-container">
+        {/* Chat title - small indicator of which chat is active */}
+        <div className="chat-title-indicator" style={{ color: theme?.color || 'var(--nandi-brown)' }}>
+          {theme?.name || 'Nandi Chat'}
+        </div>
+        
         {messages.map(msg => (
           <div 
             key={msg.id} 
@@ -276,7 +258,7 @@ const NandiChatWindow = ({ theme, onClose, messages = [], onMessagesUpdate }) =>
         }}
       ></div>
       
-      {/* Input Area */}
+      {/* Input Area - modified with close button */}
       <form className="chat-input-area" onSubmit={handleSendMessage}>
         <input
           ref={inputRef}
@@ -286,16 +268,30 @@ const NandiChatWindow = ({ theme, onClose, messages = [], onMessagesUpdate }) =>
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
         />
-        <button 
-          type="submit" 
-          className="chat-send-button"
-          disabled={!inputMessage.trim()}
-          style={{ backgroundColor: theme?.color }}
-        >
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
-          </svg>
-        </button>
+        <div className="chat-buttons-container">
+          <button 
+            type="submit" 
+            className="chat-send-button"
+            disabled={!inputMessage.trim()}
+            style={{ backgroundColor: theme?.color }}
+          >
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+            </svg>
+          </button>
+          <button 
+            type="button"
+            className="chat-close-button"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              onClose();
+            }}
+            aria-label="Close chat"
+          >
+            ✕
+          </button>
+        </div>
       </form>
     </div>
   );
