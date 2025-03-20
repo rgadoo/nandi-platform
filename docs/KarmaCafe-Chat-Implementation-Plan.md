@@ -47,6 +47,482 @@ graph TD
    - Stores session data
    - Improves response time
 
+## User Authentication and Session Management
+
+### Dual-Track Approach
+
+The KarmaCafe implements a dual-track approach that allows both anonymous and authenticated usage:
+
+```mermaid
+graph TD
+    A[User Visits Site] --> B{Sign Up?}
+    B -->|Yes| C[Authenticated User Flow]
+    B -->|No| D[Anonymous User Flow]
+    C --> E[Persistent Profile]
+    C --> F[Points Accumulation]
+    C --> G[Full Feature Access]
+    D --> H[Session-Only Profile]
+    D --> I[Session-Only Points]
+    D --> J[Basic Feature Access]
+    H --> K[Prompt to Sign Up]
+```
+
+### Anonymous User Flow
+
+1. **Session Generation:**
+   - Generate a session ID using UUID v4
+   - Store in browser localStorage
+   - Associate all interactions with this session ID
+
+2. **Session Storage:**
+   ```javascript
+   // frontend/src/services/SessionService.js
+   export const initSession = () => {
+     // Check if we already have a session ID
+     let sessionId = localStorage.getItem('nandi_session_id');
+     
+     // If not, create a new one
+     if (!sessionId) {
+       sessionId = uuidv4();
+       localStorage.setItem('nandi_session_id', sessionId);
+       // Also store creation time for session expiration checks
+       localStorage.setItem('nandi_session_created', Date.now());
+     }
+     
+     return sessionId;
+   };
+   ```
+
+3. **Temporary Data Storage:**
+   ```javascript
+   // Store chat history in localStorage for anonymous users
+   export const storeAnonymousChat = (persona, messages) => {
+     localStorage.setItem(`nandi_chat_${persona}`, JSON.stringify(messages));
+   };
+   
+   // Retrieve chat history from localStorage for anonymous users
+   export const getAnonymousChat = (persona) => {
+     const storedChat = localStorage.getItem(`nandi_chat_${persona}`);
+     return storedChat ? JSON.parse(storedChat) : [];
+   };
+   ```
+
+4. **Session Points Tracking:**
+   ```javascript
+   // Track points within the session
+   export const trackAnonymousPoints = (points, source) => {
+     let sessionPoints = JSON.parse(localStorage.getItem('nandi_session_points') || '0');
+     sessionPoints += points;
+     localStorage.setItem('nandi_session_points', JSON.stringify(sessionPoints));
+     
+     // Also track engagement for conversion prompts
+     const engagement = JSON.parse(localStorage.getItem('nandi_engagement') || '{}');
+     engagement.messageCount = (engagement.messageCount || 0) + 1;
+     engagement.lastActive = Date.now();
+     localStorage.setItem('nandi_engagement', JSON.stringify(engagement));
+     
+     // Check if we should show a sign-up prompt
+     return shouldShowSignUpPrompt(engagement);
+   };
+   ```
+
+5. **Sign-Up Conversion Prompts:**
+   ```javascript
+   // Determine when to show sign-up prompts based on engagement
+   const shouldShowSignUpPrompt = (engagement) => {
+     // Show prompts at key milestones
+     if (engagement.messageCount === 5) return true;  // After 5 messages
+     if (engagement.messageCount === 15) return true; // After 15 messages
+     
+     // Check time invested - show after 10 minutes of activity
+     const startTime = parseInt(localStorage.getItem('nandi_session_created'));
+     const timeSpent = (Date.now() - startTime) / 1000 / 60; // in minutes
+     if (timeSpent > 10 && !engagement.promptedAt10Min) {
+       engagement.promptedAt10Min = true;
+       localStorage.setItem('nandi_engagement', JSON.stringify(engagement));
+       return true;
+     }
+     
+     return false;
+   };
+   ```
+
+### Authenticated User Flow
+
+1. **User Authentication:**
+   ```javascript
+   // frontend/src/services/AuthService.js
+   export const loginUser = async (credentials) => {
+     try {
+       const response = await fetch('/api/auth/login', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify(credentials),
+       });
+       
+       if (!response.ok) {
+         throw new Error('Login failed');
+       }
+       
+       const data = await response.json();
+       
+       // Store auth token and user info
+       localStorage.setItem('nandi_auth_token', data.token);
+       localStorage.setItem('nandi_user', JSON.stringify(data.user));
+       
+       // If we have anonymous session data, migrate it
+       migrateAnonymousData(data.token, data.user.id);
+       
+       return data.user;
+     } catch (error) {
+       console.error('Login error:', error);
+       throw error;
+     }
+   };
+   ```
+
+2. **Data Migration from Anonymous to Authenticated:**
+   ```javascript
+   // Migrate anonymous data to authenticated user account
+   const migrateAnonymousData = async (token, userId) => {
+     // Check if we have anonymous data to migrate
+     const sessionId = localStorage.getItem('nandi_session_id');
+     if (!sessionId) return;
+     
+     try {
+       // Get all anonymous chat histories
+       const karmaChat = getAnonymousChat('karma');
+       const dharmaChat = getAnonymousChat('dharma');
+       const atmaChat = getAnonymousChat('atma');
+       
+       // Get session points
+       const sessionPoints = JSON.parse(localStorage.getItem('nandi_session_points') || '0');
+       
+       // Send to backend for migration
+       const response = await fetch('/api/user/migrate-anonymous', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+           'Authorization': `Bearer ${token}`,
+         },
+         body: JSON.stringify({
+           sessionId,
+           karmaChat,
+           dharmaChat,
+           atmaChat,
+           sessionPoints,
+         }),
+       });
+       
+       if (response.ok) {
+         // Clear anonymous data
+         localStorage.removeItem('nandi_session_id');
+         localStorage.removeItem('nandi_session_created');
+         localStorage.removeItem('nandi_session_points');
+         localStorage.removeItem('nandi_chat_karma');
+         localStorage.removeItem('nandi_chat_dharma');
+         localStorage.removeItem('nandi_chat_atma');
+       }
+     } catch (error) {
+       console.error('Error migrating anonymous data:', error);
+     }
+   };
+   ```
+
+3. **API Calls with Authentication:**
+   ```javascript
+   // Authenticated API call helper
+   export const authenticatedFetch = async (url, options = {}) => {
+     const token = localStorage.getItem('nandi_auth_token');
+     
+     if (!token) {
+       throw new Error('No authentication token found');
+     }
+     
+     const authOptions = {
+       ...options,
+       headers: {
+         ...options.headers,
+         'Authorization': `Bearer ${token}`,
+       },
+     };
+     
+     return fetch(url, authOptions);
+   };
+   ```
+
+### Backend Support for Anonymous Sessions
+
+#### Quarkus API Implementation
+
+```java
+@Path("/api/karma_cafe")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class ChatController {
+    
+    @Inject
+    ChatService chatService;
+    
+    @Inject
+    SecurityService securityService;
+    
+    @Inject
+    PointsService pointsService;
+    
+    @Inject
+    AnonymousSessionService anonymousSessionService;
+    
+    @POST
+    @Path("/chat")
+    public Response processChatMessage(ChatRequest request) {
+        // Try to get authenticated user
+        User currentUser = null;
+        try {
+            currentUser = securityService.getCurrentUser();
+        } catch (Exception e) {
+            // User is not authenticated - it's fine, we'll use anonymous session
+        }
+        
+        // Process request based on authentication state
+        if (currentUser != null) {
+            // Authenticated flow
+            ChatResponse response = chatService.processMessage(
+                request.getMessage(),
+                request.getPersona(),
+                request.getContext(),
+                currentUser
+            );
+            return Response.ok(response).build();
+        } else {
+            // Anonymous flow
+            String sessionId = request.getSessionId();
+            if (sessionId == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse("Session ID required for anonymous usage"))
+                    .build();
+            }
+            
+            ChatResponse response = anonymousSessionService.processAnonymousMessage(
+                sessionId,
+                request.getMessage(),
+                request.getPersona(),
+                request.getContext()
+            );
+            return Response.ok(response).build();
+        }
+    }
+    
+    @POST
+    @Path("/session")
+    public Response processSessionEnd(SessionMetricsRequest request) {
+        // Similar logic for handling both authenticated and anonymous users
+        User currentUser = null;
+        try {
+            currentUser = securityService.getCurrentUser();
+        } catch (Exception e) {
+            // Anonymous session
+        }
+        
+        PointsResponse pointsResponse;
+        if (currentUser != null) {
+            // Authenticated flow
+            pointsResponse = pointsService.calculateSessionPoints(
+                request.getPersona(),
+                request.getDurationSeconds(),
+                request.getMessageCount(),
+                currentUser
+            );
+        } else {
+            // Anonymous flow
+            pointsResponse = anonymousSessionService.calculateAnonymousSessionPoints(
+                request.getSessionId(),
+                request.getPersona(),
+                request.getDurationSeconds(),
+                request.getMessageCount()
+            );
+        }
+        
+        return Response.ok(pointsResponse).build();
+    }
+    
+    @POST
+    @Path("/migrate-anonymous")
+    @Authenticated // This endpoint requires authentication
+    public Response migrateAnonymousData(AnonymousMigrationRequest request) {
+        User currentUser = securityService.getCurrentUser();
+        
+        boolean success = anonymousSessionService.migrateToAuthenticatedUser(
+            request.getSessionId(),
+            currentUser,
+            request.getKarmaChat(),
+            request.getDharmaChat(),
+            request.getAtmaChat(),
+            request.getSessionPoints()
+        );
+        
+        if (success) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorResponse("Failed to migrate anonymous data"))
+                .build();
+        }
+    }
+}
+```
+
+#### Anonymous Session Service
+
+```java
+@ApplicationScoped
+public class AnonymousSessionService {
+    
+    @Inject
+    AIServiceClient aiServiceClient;
+    
+    @Inject
+    AnonymousSessionRepository anonymousSessionRepository;
+    
+    @Inject
+    ChatRepository chatRepository;
+    
+    @Inject
+    CacheManager cacheManager;
+    
+    public ChatResponse processAnonymousMessage(String sessionId, String message, 
+                                              Persona persona, List<MessageContext> context) {
+        // Get or create anonymous session
+        AnonymousSession session = getOrCreateSession(sessionId);
+        
+        // Call AI service for response with quality score
+        AIResponseWithQuality aiResponse = aiServiceClient.generateResponseWithQuality(
+            message, persona, context);
+        
+        // Store message in temporary session history (without persisting to user table)
+        storeAnonymousMessage(session, message, aiResponse.getMessage(), 
+                             persona, aiResponse.getQualityScore());
+        
+        // Return response with quality score
+        return new ChatResponse(
+            aiResponse.getMessage(),
+            aiResponse.getQualityScore(),
+            aiResponse.getScoreReason()
+        );
+    }
+    
+    public PointsResponse calculateAnonymousSessionPoints(String sessionId, String persona,
+                                                        long durationSeconds, int messageCount) {
+        // Calculate points similarly to authenticated users
+        // But only store them in the anonymous session
+        AnonymousSession session = getOrCreateSession(sessionId);
+        
+        int pointsEarned = 0;
+        
+        // 1. Base points for participation
+        pointsEarned += 5;
+        
+        // 2. Points for duration
+        int durationPoints = (int) Math.min(30, durationSeconds / 60);
+        pointsEarned += durationPoints;
+        
+        // 3. Points for message count
+        int messagePoints = Math.min(20, messageCount * 2);
+        pointsEarned += messagePoints;
+        
+        // Update session
+        session.setLastActivity(LocalDateTime.now());
+        session.setTotalPoints(session.getTotalPoints() + pointsEarned);
+        anonymousSessionRepository.update(session);
+        
+        // Return response with only session points (no streak bonus)
+        return new PointsResponse(pointsEarned, session.getTotalPoints());
+    }
+    
+    private AnonymousSession getOrCreateSession(String sessionId) {
+        Optional<AnonymousSession> existingSession = 
+            anonymousSessionRepository.findBySessionId(sessionId);
+        
+        if (existingSession.isPresent()) {
+            return existingSession.get();
+        } else {
+            AnonymousSession newSession = new AnonymousSession();
+            newSession.setSessionId(sessionId);
+            newSession.setCreatedAt(LocalDateTime.now());
+            newSession.setLastActivity(LocalDateTime.now());
+            newSession.setTotalPoints(0);
+            anonymousSessionRepository.persist(newSession);
+            return newSession;
+        }
+    }
+    
+    public boolean migrateToAuthenticatedUser(String sessionId, User user, 
+                                            List<ChatMessage> karmaChat,
+                                            List<ChatMessage> dharmaChat,
+                                            List<ChatMessage> atmaChat,
+                                            int sessionPoints) {
+        try {
+            // Find anonymous session
+            Optional<AnonymousSession> sessionOpt = 
+                anonymousSessionRepository.findBySessionId(sessionId);
+            
+            if (!sessionOpt.isPresent()) {
+                return false;
+            }
+            
+            AnonymousSession session = sessionOpt.get();
+            
+            // Migrate points
+            user.setTotalPoints(user.getTotalPoints() + session.getTotalPoints());
+            
+            // Migrate chat messages
+            migrateMessages(karmaChat, Persona.KARMA, user);
+            migrateMessages(dharmaChat, Persona.DHARMA, user);
+            migrateMessages(atmaChat, Persona.ATMA, user);
+            
+            // Delete anonymous session
+            anonymousSessionRepository.delete(session);
+            
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    private void migrateMessages(List<ChatMessage> messages, Persona persona, User user) {
+        if (messages == null || messages.isEmpty()) {
+            return;
+        }
+        
+        for (ChatMessage message : messages) {
+            ChatMessage newMessage = new ChatMessage(
+                message.type,
+                message.content,
+                persona,
+                user,
+                message.qualityScore
+            );
+            chatRepository.persist(newMessage);
+        }
+    }
+}
+```
+
+### Additional Database Schema
+
+#### AnonymousSession Table
+
+| Column         | Type           | Description                                 |
+|----------------|----------------|---------------------------------------------|
+| id             | Long           | Primary key                                 |
+| session_id     | String         | UUID for the anonymous session              |
+| created_at     | LocalDateTime  | Session creation timestamp                  |
+| last_activity  | LocalDateTime  | Last activity timestamp                     |
+| total_points   | Integer        | Points accumulated in this session          |
+| message_count  | Integer        | Total number of messages in session         |
+
 ## Prompt Engineering
 
 ### Persona-Based System Prompts
@@ -591,40 +1067,104 @@ public class ChatController {
     @Inject
     PointsService pointsService;
     
+    @Inject
+    AnonymousSessionService anonymousSessionService;
+    
     @POST
     @Path("/chat")
     public Response processChatMessage(ChatRequest request) {
-        // 1. Authenticate user (if required)
-        User currentUser = securityService.getCurrentUser();
+        // Try to get authenticated user
+        User currentUser = null;
+        try {
+            currentUser = securityService.getCurrentUser();
+        } catch (Exception e) {
+            // User is not authenticated - it's fine, we'll use anonymous session
+        }
         
-        // 2. Process chat request
-        ChatResponse response = chatService.processMessage(
-            request.getMessage(),
-            request.getPersona(),
-            request.getContext(),
-            currentUser
-        );
-        
-        // 3. Return response with quality score if available
-        return Response.ok(response).build();
+        // Process request based on authentication state
+        if (currentUser != null) {
+            // Authenticated flow
+            ChatResponse response = chatService.processMessage(
+                request.getMessage(),
+                request.getPersona(),
+                request.getContext(),
+                currentUser
+            );
+            return Response.ok(response).build();
+        } else {
+            // Anonymous flow
+            String sessionId = request.getSessionId();
+            if (sessionId == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse("Session ID required for anonymous usage"))
+                    .build();
+            }
+            
+            ChatResponse response = anonymousSessionService.processAnonymousMessage(
+                sessionId,
+                request.getMessage(),
+                request.getPersona(),
+                request.getContext()
+            );
+            return Response.ok(response).build();
+        }
     }
     
     @POST
     @Path("/session")
     public Response processSessionEnd(SessionMetricsRequest request) {
-        // 1. Authenticate user
+        // Similar logic for handling both authenticated and anonymous users
+        User currentUser = null;
+        try {
+            currentUser = securityService.getCurrentUser();
+        } catch (Exception e) {
+            // Anonymous session
+        }
+        
+        PointsResponse pointsResponse;
+        if (currentUser != null) {
+            // Authenticated flow
+            pointsResponse = pointsService.calculateSessionPoints(
+                request.getPersona(),
+                request.getDurationSeconds(),
+                request.getMessageCount(),
+                currentUser
+            );
+        } else {
+            // Anonymous flow
+            pointsResponse = anonymousSessionService.calculateAnonymousSessionPoints(
+                request.getSessionId(),
+                request.getPersona(),
+                request.getDurationSeconds(),
+                request.getMessageCount()
+            );
+        }
+        
+        return Response.ok(pointsResponse).build();
+    }
+    
+    @POST
+    @Path("/migrate-anonymous")
+    @Authenticated // This endpoint requires authentication
+    public Response migrateAnonymousData(AnonymousMigrationRequest request) {
         User currentUser = securityService.getCurrentUser();
         
-        // 2. Calculate points earned for this session
-        PointsResponse pointsResponse = pointsService.calculateSessionPoints(
-            request.getPersona(),
-            request.getDurationSeconds(),
-            request.getMessageCount(),
-            currentUser
+        boolean success = anonymousSessionService.migrateToAuthenticatedUser(
+            request.getSessionId(),
+            currentUser,
+            request.getKarmaChat(),
+            request.getDharmaChat(),
+            request.getAtmaChat(),
+            request.getSessionPoints()
         );
         
-        // 3. Return points information
-        return Response.ok(pointsResponse).build();
+        if (success) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorResponse("Failed to migrate anonymous data"))
+                .build();
+        }
     }
 }
 ```
