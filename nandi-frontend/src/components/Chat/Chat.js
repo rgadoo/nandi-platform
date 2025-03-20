@@ -1,44 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import ChatBubbles from './ChatBubbles';
 import NandiChatWindow from './NandiChatWindow';
-import { FaBalanceScale, FaRoute, FaYinYang } from 'react-icons/fa';
 
-// Define the chat themes for consistency with updated colors and icons
+// Define the chat themes with modern names and updated descriptions
 const CHAT_THEMES = [
   {
     id: 'karma',
-    name: 'Karma Chat',
-    icon: <FaBalanceScale />,
+    name: 'Lumina',
     color: '#FF9800', // Vibrant Orange
     position: 'bottom',
-    description: 'Action & Consequence',
+    description: 'Wisdom & Life Choices',
+    themeDescription: 'Guides decisions through clarity & insight',
     avatarImage: '/images/chat-avatars/karma-avatar.png'
   },
   {
     id: 'dharma',
-    name: 'Dharma Chat',
-    icon: <FaRoute />,
+    name: 'Nova',
     color: '#4CAF50', // Deep Green
     position: 'middle',
-    description: 'Purpose & Guidance',
+    description: 'Personal Growth & Purpose',
+    themeDescription: 'Helps users explore and find their path',
     avatarImage: '/images/chat-avatars/wisdom-avatar.png'
   },
   {
     id: 'atma',
-    name: 'Atma Chat',
-    icon: <FaYinYang />,
+    name: 'Solis',
     color: '#3F51B5', // Deep Indigo
     position: 'top',
     description: 'Mindfulness & Inner Peace',
+    themeDescription: 'Encourages calm, clarity, and balance',
     avatarImage: '/images/chat-avatars/meditation-avatar.png'
   }
 ];
 
 /**
- * ChatDemo - Components that showcases the chat functionality
+ * Chat - Component that showcases the chat functionality
  * with clay-like design
  */
-const ChatDemo = () => {
+const Chat = () => {
   const [activeChat, setActiveChat] = useState(null);
   const [messageHistories, setMessageHistories] = useState({});
   
@@ -47,10 +46,21 @@ const ChatDemo = () => {
     const initialHistories = {};
     CHAT_THEMES.forEach(theme => {
       if (!messageHistories[theme.id]) {
+        let welcomeMessage = '';
+        
+        // Set specific welcome message based on chat theme ID
+        if (theme.id === 'karma') {
+          welcomeMessage = "Your choices shape your story. Big or small, they all matter. What's on your mind?";
+        } else if (theme.id === 'dharma') {
+          welcomeMessage = "Every journey starts with a step. Need clarity, direction, or just exploring?";
+        } else if (theme.id === 'atma') {
+          welcomeMessage = "Pause for a moment. What's been weighing on your mind?";
+        }
+        
         initialHistories[theme.id] = [
           {
             id: 1,
-            message: `Welcome to ${theme.name}, your guide for ${theme.description}. How may I assist you on your journey today?`,
+            message: welcomeMessage,
             sentTime: "just now",
             sender: "system",
             direction: "incoming"
@@ -128,4 +138,4 @@ const ChatDemo = () => {
   );
 };
 
-export default ChatDemo; 
+export default Chat; 

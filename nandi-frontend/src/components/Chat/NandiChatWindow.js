@@ -151,6 +151,19 @@ const NandiChatWindow = ({ theme, onClose, messages = [], onMessagesUpdate }) =>
     }
   };
 
+  const getPlaceholderForTheme = (themeId) => {
+    switch(themeId) {
+      case 'karma':
+        return "e.g., Should I take a new job? How do I handle this situation?";
+      case 'dharma':
+        return "e.g., What's my purpose? How can I grow as a person?";
+      case 'atma':
+        return "e.g., How can I find inner peace? What meditation works best?";
+      default:
+        return "Type your message...";
+    }
+  };
+
   return (
     <div 
       className="nandi-chat-window"
@@ -261,7 +274,7 @@ const NandiChatWindow = ({ theme, onClose, messages = [], onMessagesUpdate }) =>
           ref={inputRef}
           type="text"
           className="chat-input"
-          placeholder="Type your message..."
+          placeholder={getPlaceholderForTheme(theme?.id)}
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
         />

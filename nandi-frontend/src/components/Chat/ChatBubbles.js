@@ -15,24 +15,24 @@ const ChatBubbles = ({ activeChat, onChatToggle }) => {
   const chatThemes = [
     {
       id: 'karma',
-      name: 'Karma Chat',
+      name: 'Lumina ⚡',
       color: '#FF9800', // Vibrant Orange
       position: 'bottom',
-      icon: FaBalanceScale // Balance scale icon
+      icon: FaBalanceScale // Balance scale icon for Wisdom & Life Choices
     },
     {
       id: 'dharma',
-      name: 'Dharma Chat',
+      name: 'Nova 🔮',
       color: '#4CAF50', // Deep Green
       position: 'middle',
-      icon: FaCompass // Compass icon
+      icon: FaCompass // Compass icon for Personal Growth & Purpose
     },
     {
       id: 'atma',
-      name: 'Atma Chat',
+      name: 'Solis 🌿',
       color: '#3F51B5', // Deep Indigo
       position: 'top',
-      icon: GiFlowerEmblem // Lotus icon
+      icon: GiFlowerEmblem // Lotus flower icon for Mindfulness & Inner Peace
     }
   ];
 

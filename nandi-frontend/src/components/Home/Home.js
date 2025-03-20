@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
-import ChatDemo from '../Chat/ChatDemo';
+import Chat from '../Chat/Chat';
 import { FaHome, FaSearch, FaUserAlt, FaDog, FaQuestion, FaPrayingHands, FaGem } from 'react-icons/fa';
 
 function Home() {
@@ -150,7 +150,7 @@ function Home() {
             </div>
             
             {/* Chat component */}
-            <ChatDemo />
+            <Chat />
         </div>
     );
 }
