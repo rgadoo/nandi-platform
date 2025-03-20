@@ -523,6 +523,894 @@ public class AnonymousSessionService {
 | total_points   | Integer        | Points accumulated in this session          |
 | message_count  | Integer        | Total number of messages in session         |
 
+## User Authentication Implementation
+
+### Authentication Strategy
+
+The Nandi platform implements a hybrid authentication approach that provides users with both traditional email-based authentication and social login options:
+
+```mermaid
+graph TD
+    A[User Authentication] --> B[Traditional Auth]
+    A --> C[Social Login]
+    B --> D[Email & Password]
+    B --> E[Email Verification]
+    C --> F[Google OAuth]
+    C --> G[Apple OAuth]
+    C --> H[Facebook OAuth]
+    C --> I[Twitter/X OAuth]
+    J[Anonymous Session] --> K[Convert to Authenticated]
+```
+
+### Frontend Implementation
+
+#### Login/Signup Component
+
+```javascript
+// nandi-frontend/src/components/Auth/AuthModal.js
+import React, { useState } from 'react';
+import { GoogleLogin } from 'react-google-login';
+import { AppleLogin } from 'react-apple-authentication';
+import FacebookLogin from 'react-facebook-login';
+import { TwitterLogin } from 'react-twitter-auth';
+
+const AuthModal = ({ isOpen, onClose, defaultMode = 'login' }) => {
+  const [mode, setMode] = useState(defaultMode); // 'login' or 'signup'
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Traditional login handler
+  const handleTraditionalAuth = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    try {
+      let response;
+      if (mode === 'login') {
+        response = await loginUser({ email, password });
+      } else {
+        response = await registerUser({ email, password, name });
+      }
+
+      // Handle successful auth
+      if (response.token) {
+        localStorage.setItem('nandi_auth_token', response.token);
+        localStorage.setItem('nandi_user', JSON.stringify(response.user));
+        onClose();
+        window.location.reload(); // Refresh to apply authenticated state
+      }
+    } catch (err) {
+      setError(err.message || 'Authentication failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Social login handlers
+  const handleGoogleSuccess = async (response) => {
+    await handleSocialLogin('google', response.tokenId);
+  };
+
+  const handleFacebookSuccess = async (response) => {
+    await handleSocialLogin('facebook', response.accessToken);
+  };
+
+  const handleAppleSuccess = async (response) => {
+    await handleSocialLogin('apple', response.authorization.id_token);
+  };
+
+  const handleTwitterSuccess = async (response) => {
+    await handleSocialLogin('twitter', response.token);
+  };
+
+  // Common social login processor
+  const handleSocialLogin = async (provider, token) => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/auth/social-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          provider,
+          token,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Social login failed');
+      }
+
+      const data = await response.json();
+
+      // Store auth data
+      localStorage.setItem('nandi_auth_token', data.token);
+      localStorage.setItem('nandi_user', JSON.stringify(data.user));
+      
+      // Handle anonymous data migration if needed
+      if (localStorage.getItem('nandi_session_id')) {
+        await migrateAnonymousData(data.token, data.user.id);
+      }
+      
+      onClose();
+      window.location.reload(); // Refresh to apply authenticated state
+    } catch (err) {
+      setError('Social login failed. Please try again or use email login.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className={`auth-modal ${isOpen ? 'open' : ''}`}>
+      <div className="auth-modal-content">
+        <button className="close-button" onClick={onClose}>×</button>
+        
+        <h2>{mode === 'login' ? 'Welcome Back' : 'Join Nandi'}</h2>
+        
+        {error && <div className="auth-error">{error}</div>}
+        
+        <form onSubmit={handleTraditionalAuth} className="traditional-auth-form">
+          {mode === 'signup' && (
+            <div className="form-group">
+              <label htmlFor="name">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required={mode === 'signup'}
+              />
+            </div>
+          )}
+          
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          
+          <button 
+            type="submit" 
+            className="auth-submit-button"
+            disabled={isLoading}
+          >
+            {isLoading 
+              ? 'Processing...' 
+              : mode === 'login' ? 'Log In' : 'Sign Up'}
+          </button>
+        </form>
+        
+        <div className="auth-separator">
+          <span>or</span>
+        </div>
+        
+        <div className="social-auth-buttons">
+          <GoogleLogin
+            clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+            onSuccess={handleGoogleSuccess}
+            onFailure={(err) => setError('Google login failed')}
+            cookiePolicy={'single_host_origin'}
+            render={renderProps => (
+              <button 
+                onClick={renderProps.onClick} 
+                disabled={renderProps.disabled || isLoading}
+                className="social-auth-button google"
+              >
+                Continue with Google
+              </button>
+            )}
+          />
+          
+          <AppleLogin
+            clientId={process.env.REACT_APP_APPLE_CLIENT_ID}
+            redirectURI={`${window.location.origin}/auth/apple/callback`}
+            onSuccess={handleAppleSuccess}
+            onError={(err) => setError('Apple login failed')}
+            render={renderProps => (
+              <button 
+                onClick={renderProps.onClick}
+                disabled={isLoading}
+                className="social-auth-button apple"
+              >
+                Continue with Apple
+              </button>
+            )}
+          />
+          
+          <FacebookLogin
+            appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+            callback={handleFacebookSuccess}
+            render={renderProps => (
+              <button 
+                onClick={renderProps.onClick}
+                disabled={isLoading}
+                className="social-auth-button facebook"
+              >
+                Continue with Facebook
+              </button>
+            )}
+          />
+          
+          <TwitterLogin
+            loginUrl="/api/auth/twitter"
+            requestTokenUrl="/api/auth/twitter/request_token"
+            onSuccess={handleTwitterSuccess}
+            onFailure={(err) => setError('Twitter login failed')}
+            showIcon={false}
+            customClassName="social-auth-button twitter"
+            disabled={isLoading}
+          >
+            Continue with Twitter/X
+          </TwitterLogin>
+        </div>
+        
+        <div className="auth-mode-toggle">
+          {mode === 'login' ? (
+            <p>
+              Don't have an account? 
+              <button onClick={() => setMode('signup')}>Sign Up</button>
+            </p>
+          ) : (
+            <p>
+              Already have an account? 
+              <button onClick={() => setMode('login')}>Log In</button>
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+#### Auth Service
+
+```javascript
+// nandi-frontend/src/services/AuthService.js
+export const checkAuthStatus = () => {
+  const token = localStorage.getItem('nandi_auth_token');
+  const user = JSON.parse(localStorage.getItem('nandi_user') || 'null');
+  
+  if (!token || !user) {
+    return { isAuthenticated: false, user: null };
+  }
+  
+  // Check if token is expired
+  if (isTokenExpired(token)) {
+    // Clear invalid auth data
+    localStorage.removeItem('nandi_auth_token');
+    localStorage.removeItem('nandi_user');
+    return { isAuthenticated: false, user: null };
+  }
+  
+  return { isAuthenticated: true, user };
+};
+
+export const loginUser = async (credentials) => {
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Login failed');
+    }
+    
+    const data = await response.json();
+    
+    // Store auth token and user info
+    localStorage.setItem('nandi_auth_token', data.token);
+    localStorage.setItem('nandi_user', JSON.stringify(data.user));
+    
+    // If we have anonymous session data, migrate it
+    migrateAnonymousData(data.token, data.user.id);
+    
+    return data;
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
+  }
+};
+
+export const registerUser = async (userData) => {
+  try {
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Registration failed');
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Registration error:', error);
+    throw error;
+  }
+};
+
+export const logoutUser = () => {
+  localStorage.removeItem('nandi_auth_token');
+  localStorage.removeItem('nandi_user');
+  
+  // We keep anonymous session data so the user can continue without losing context
+  
+  // Reload page to reset state
+  window.location.reload();
+};
+
+export const verifyEmail = async (token) => {
+  try {
+    const response = await fetch(`/api/auth/verify-email/${token}`);
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Email verification failed');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Email verification error:', error);
+    throw error;
+  }
+};
+
+// Utility to check if JWT is expired
+const isTokenExpired = (token) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    
+    const { exp } = JSON.parse(jsonPayload);
+    const expired = Date.now() >= exp * 1000;
+    
+    return expired;
+  } catch (e) {
+    // If we can't decode the token, consider it expired
+    return true;
+  }
+};
+```
+
+### Backend Implementation
+
+#### Auth Controller
+
+```java
+// nandi-api/src/main/java/com/nandi/api/controller/AuthController.java
+@Path("/api/auth")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class AuthController {
+    
+    @Inject
+    UserService userService;
+    
+    @Inject
+    JwtProvider jwtProvider;
+    
+    @Inject
+    SocialAuthService socialAuthService;
+    
+    @Inject
+    EmailService emailService;
+    
+    @POST
+    @Path("/register")
+    public Response register(RegisterRequest request) {
+        try {
+            // Check if user already exists
+            if (userService.findByEmail(request.getEmail()).isPresent()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse("Email already registered"))
+                    .build();
+            }
+            
+            // Create user
+            User user = userService.createUser(
+                request.getName(),
+                request.getEmail(),
+                request.getPassword()
+            );
+            
+            // Generate verification token
+            String verificationToken = userService.generateEmailVerificationToken(user);
+            
+            // Send verification email
+            emailService.sendVerificationEmail(
+                user.getEmail(),
+                user.getName(),
+                verificationToken
+            );
+            
+            // Return response without JWT (require email verification)
+            return Response.status(Response.Status.CREATED)
+                .entity(new RegistrationResponse(
+                    user.getId(),
+                    user.getName(),
+                    user.getEmail(),
+                    "Verification email sent"
+                ))
+                .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorResponse("Registration failed: " + e.getMessage()))
+                .build();
+        }
+    }
+    
+    @POST
+    @Path("/login")
+    public Response login(LoginRequest request) {
+        try {
+            // Authenticate user
+            Optional<User> userOpt = userService.authenticateUser(
+                request.getEmail(),
+                request.getPassword()
+            );
+            
+            if (!userOpt.isPresent()) {
+                return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(new ErrorResponse("Invalid credentials"))
+                    .build();
+            }
+            
+            User user = userOpt.get();
+            
+            // Check if email is verified (for users registered with email)
+            if (user.getAuthProvider() == AuthProvider.LOCAL && !user.isEmailVerified()) {
+                return Response.status(Response.Status.FORBIDDEN)
+                    .entity(new ErrorResponse("Email not verified. Please check your inbox."))
+                    .build();
+            }
+            
+            // Generate JWT
+            String token = jwtProvider.generateToken(user);
+            
+            // Return response with JWT
+            return Response.ok(new AuthResponse(
+                token,
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getTotalPoints(),
+                user.getAuthProvider().toString()
+            )).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorResponse("Login failed: " + e.getMessage()))
+                .build();
+        }
+    }
+    
+    @GET
+    @Path("/verify-email/{token}")
+    public Response verifyEmail(@PathParam("token") String token) {
+        try {
+            boolean verified = userService.verifyEmail(token);
+            
+            if (!verified) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse("Invalid or expired verification token"))
+                    .build();
+            }
+            
+            return Response.ok(new SuccessResponse("Email verified successfully"))
+                .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorResponse("Email verification failed: " + e.getMessage()))
+                .build();
+        }
+    }
+    
+    @POST
+    @Path("/social-login")
+    public Response socialLogin(SocialLoginRequest request) {
+        try {
+            // Validate social token with provider
+            UserInfo userInfo = socialAuthService.validateToken(
+                request.getProvider(),
+                request.getToken()
+            );
+            
+            // Check if user exists
+            Optional<User> existingUser = userService.findByEmail(userInfo.getEmail());
+            
+            User user;
+            if (existingUser.isPresent()) {
+                // User exists, update social provider info if needed
+                user = existingUser.get();
+                
+                // If user previously registered with email but now using social, link accounts
+                if (user.getAuthProvider() == AuthProvider.LOCAL) {
+                    user.setAuthProvider(AuthProvider.valueOf(request.getProvider().toUpperCase()));
+                    user.setProviderId(userInfo.getId());
+                    userService.updateUser(user);
+                }
+            } else {
+                // Create new user with social provider
+                user = userService.createSocialUser(
+                    userInfo.getName(),
+                    userInfo.getEmail(),
+                    AuthProvider.valueOf(request.getProvider().toUpperCase()),
+                    userInfo.getId()
+                );
+            }
+            
+            // Generate JWT
+            String token = jwtProvider.generateToken(user);
+            
+            // Return response with JWT
+            return Response.ok(new AuthResponse(
+                token,
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getTotalPoints(),
+                user.getAuthProvider().toString()
+            )).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorResponse("Social login failed: " + e.getMessage()))
+                .build();
+        }
+    }
+    
+    @POST
+    @Path("/reset-password/request")
+    public Response requestPasswordReset(PasswordResetRequest request) {
+        try {
+            Optional<User> userOpt = userService.findByEmail(request.getEmail());
+            
+            if (!userOpt.isPresent()) {
+                // Don't reveal if email exists or not for security
+                return Response.ok(new SuccessResponse(
+                    "If your email is registered, you will receive password reset instructions"
+                )).build();
+            }
+            
+            User user = userOpt.get();
+            
+            // Only allow password reset for email-based accounts
+            if (user.getAuthProvider() != AuthProvider.LOCAL) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse("Account uses social login. Password reset not available."))
+                    .build();
+            }
+            
+            // Generate password reset token
+            String resetToken = userService.generatePasswordResetToken(user);
+            
+            // Send password reset email
+            emailService.sendPasswordResetEmail(
+                user.getEmail(),
+                user.getName(),
+                resetToken
+            );
+            
+            return Response.ok(new SuccessResponse(
+                "Password reset instructions sent to your email"
+            )).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorResponse("Password reset request failed: " + e.getMessage()))
+                .build();
+        }
+    }
+    
+    @POST
+    @Path("/reset-password/confirm")
+    public Response confirmPasswordReset(PasswordResetConfirmRequest request) {
+        try {
+            boolean reset = userService.resetPassword(
+                request.getToken(),
+                request.getNewPassword()
+            );
+            
+            if (!reset) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse("Invalid or expired reset token"))
+                    .build();
+            }
+            
+            return Response.ok(new SuccessResponse("Password reset successful"))
+                .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorResponse("Password reset failed: " + e.getMessage()))
+                .build();
+        }
+    }
+}
+```
+
+#### Social Auth Service
+
+```java
+// nandi-api/src/main/java/com/nandi/api/service/SocialAuthService.java
+@ApplicationScoped
+public class SocialAuthService {
+    
+    @Inject
+    GoogleTokenVerifier googleTokenVerifier;
+    
+    @Inject
+    FacebookTokenVerifier facebookTokenVerifier;
+    
+    @Inject
+    AppleTokenVerifier appleTokenVerifier;
+    
+    @Inject
+    TwitterTokenVerifier twitterTokenVerifier;
+    
+    public UserInfo validateToken(String provider, String token) {
+        switch (provider.toLowerCase()) {
+            case "google":
+                return googleTokenVerifier.verify(token);
+                
+            case "facebook":
+                return facebookTokenVerifier.verify(token);
+                
+            case "apple":
+                return appleTokenVerifier.verify(token);
+                
+            case "twitter":
+                return twitterTokenVerifier.verify(token);
+                
+            default:
+                throw new IllegalArgumentException("Unsupported provider: " + provider);
+        }
+    }
+}
+```
+
+#### JWT Provider
+
+```java
+// nandi-api/src/main/java/com/nandi/api/security/JwtProvider.java
+@ApplicationScoped
+public class JwtProvider {
+    
+    @ConfigProperty(name = "nandi.jwt.secret")
+    String jwtSecret;
+    
+    @ConfigProperty(name = "nandi.jwt.expiration")
+    long jwtExpiration;
+    
+    public String generateToken(User user) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtExpiration);
+        
+        return Jwts.builder()
+            .setSubject(String.valueOf(user.getId()))
+            .setIssuedAt(now)
+            .setExpiration(expiryDate)
+            .signWith(SignatureAlgorithm.HS512, jwtSecret)
+            .compact();
+    }
+    
+    public Long getUserIdFromJWT(String token) {
+        Claims claims = Jwts.parser()
+            .setSigningKey(jwtSecret)
+            .parseClaimsJws(token)
+            .getBody();
+        
+        return Long.parseLong(claims.getSubject());
+    }
+    
+    public boolean validateToken(String authToken) {
+        try {
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            return true;
+        } catch (SignatureException ex) {
+            // Invalid JWT signature
+            return false;
+        } catch (MalformedJwtException ex) {
+            // Invalid JWT token
+            return false;
+        } catch (ExpiredJwtException ex) {
+            // Expired JWT token
+            return false;
+        } catch (UnsupportedJwtException ex) {
+            // Unsupported JWT token
+            return false;
+        } catch (IllegalArgumentException ex) {
+            // JWT claims string is empty
+            return false;
+        }
+    }
+}
+```
+
+### Database Schema Updates
+
+#### User Table (Enhanced for Auth)
+
+| Column             | Type           | Description                                 |
+|--------------------|----------------|---------------------------------------------|
+| id                 | Long           | Primary key                                 |
+| name               | String         | User's full name                            |
+| email              | String         | User's email address (unique)               |
+| password_hash      | String         | Bcrypt hashed password (NULL for social)    |
+| is_email_verified  | Boolean        | Whether email has been verified             |
+| auth_provider      | AuthProvider   | Enum: LOCAL, GOOGLE, FACEBOOK, APPLE, TWITTER |
+| provider_id        | String         | ID from the social provider (NULL for LOCAL) |
+| profile_image_url  | String         | URL to profile image                        |
+| total_points       | Integer        | Total points accumulated                    |
+| created_at         | LocalDateTime  | Account creation timestamp                  |
+| updated_at         | LocalDateTime  | Last update timestamp                       |
+
+#### VerificationToken Table
+
+| Column             | Type           | Description                                 |
+|--------------------|----------------|---------------------------------------------|
+| id                 | Long           | Primary key                                 |
+| token              | String         | Verification token (UUID)                   |
+| user_id            | Long           | Foreign key to User table                   |
+| type               | TokenType      | Enum: EMAIL_VERIFICATION, PASSWORD_RESET    |
+| expiry_date        | LocalDateTime  | Token expiration timestamp                  |
+| created_at         | LocalDateTime  | Token creation timestamp                    |
+
+### Security Configuration
+
+```java
+// nandi-api/src/main/java/com/nandi/api/security/SecurityConfig.java
+@ApplicationScoped
+public class SecurityConfig {
+    
+    @Inject
+    JwtAuthenticationFilter jwtAuthenticationFilter;
+    
+    public HttpSecurity configureHttpSecurity(HttpSecurity http) throws Exception {
+        http
+            .csrf().disable()
+            .cors()
+            .and()
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .authorizeRequests()
+            // Public endpoints
+            .antMatchers(
+                "/api/auth/**",
+                "/api/public/**",
+                "/api/karma_cafe/chat"
+            ).permitAll()
+            // Protected endpoints
+            .anyRequest().authenticated()
+            .and()
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        
+        return http;
+    }
+    
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+```
+
+### Email Templates
+
+#### Verification Email Template
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Your Email</title>
+    <style>
+        /* Email styling */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .logo {
+            width: 120px;
+            height: auto;
+        }
+        .content {
+            padding: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #FF9800;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://nandi.com/assets/logo.png" alt="Nandi Logo" class="logo">
+            <h1>Welcome to Nandi!</h1>
+        </div>
+        <div class="content">
+            <p>Hello {{name}},</p>
+            <p>Thank you for joining Nandi. To complete your registration, please verify your email address by clicking the button below:</p>
+            <p style="text-align: center;">
+                <a href="{{verificationUrl}}" class="button">Verify Email</a>
+            </p>
+            <p>This link will expire in 24 hours.</p>
+            <p>If you didn't create an account with Nandi, you can safely ignore this email.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2023 Nandi. All rights reserved.</p>
+            <p>123 Wellness Street, Mindful City, MC 12345</p>
+        </div>
+    </div>
+</body>
+</html>
+```
+
 ## Prompt Engineering
 
 ### Persona-Based System Prompts
