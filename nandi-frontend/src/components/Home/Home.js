@@ -20,23 +20,8 @@ function Home() {
 
     return (
         <div className="home-container">
-            {/* Decorative elements for desktop */}
-            <div className="decorative-elements">
-                {/* Left side decorations */}
-                <div className="left-decoration">
-                    <div className="decorative-circle float-animation"></div>
-                    <div className="decorative-mandala float-animation-reverse"></div>
-                    <div className="decorative-circle float-animation-slow glow-effect"></div>
-                </div>
-                
-                {/* Right side decorations */}
-                <div className="right-decoration">
-                    <div className="decorative-lotus float-animation-slow"></div>
-                    <div className="decorative-circle float-animation glow-effect"></div>
-                    <div className="decorative-mandala float-animation-reverse"></div>
-                </div>
-            </div>
-
+            {/* Decorative elements for desktop have been removed */}
+            
             <div className="phone-frame">
                 <header className="home-header">
                     {/* Breathe Bubble - Left Side */}

@@ -462,7 +462,7 @@ body {
   }
 }
 
-/* Decorative elements */
+/* Decorative elements - commented out since they are no longer used 
 .decorative-elements {
   position: absolute;
   width: 100%;
@@ -483,17 +483,17 @@ body {
 }
 
 .left-decoration {
-  left: -80px; /* Less negative to be more visible on mobile */
+  left: -80px;
   width: 140px;
 }
 
 .right-decoration {
-  right: -80px; /* Less negative to be more visible on mobile */
+  right: -80px;
   width: 140px;
 }
 
 .decorative-circle {
-  width: 80px; /* Smaller for mobile */
+  width: 80px;
   height: 80px; 
   border-radius: 50%;
   border: 1px solid rgba(210, 105, 30, 0.4);
@@ -501,7 +501,7 @@ body {
 }
 
 .decorative-mandala {
-  width: 100px; /* Smaller for mobile */
+  width: 100px;
   height: 100px;
   background-image: url('../../images/decorative/mandala.svg');
   background-size: contain;
@@ -511,7 +511,7 @@ body {
 }
 
 .decorative-lotus {
-  width: 90px; /* Smaller for mobile */
+  width: 90px;
   height: 90px;
   background-image: url('../../images/decorative/lotus.svg');
   background-size: contain;
@@ -524,7 +524,6 @@ body {
   box-shadow: 0 0 25px rgba(210, 105, 30, 0.3);
 }
 
-/* Animation classes */
 .float-animation {
   animation: float 8s ease-in-out infinite;
 }
@@ -549,7 +548,6 @@ body {
   }
 }
 
-/* Desktop styles - larger elements for larger screens */
 @media (min-width: 1024px) {
   .left-decoration, .right-decoration {
     width: 300px;
@@ -578,6 +576,7 @@ body {
     height: 180px;
   }
 }
+*/
 
 /* Breathe Bubble */
 .breathe-bubble-container {
