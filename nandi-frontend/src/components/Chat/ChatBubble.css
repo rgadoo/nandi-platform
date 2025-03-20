@@ -129,4 +129,38 @@
   .chat-bubble-middle-right {
     display: none;
   }
+}
+
+/* Icon styling */
+.chat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: rgba(255, 255, 255, 0.85);
+  height: 100%;
+  width: 100%;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.chat-icon-button:hover .chat-icon {
+  transform: scale(1.1);
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 
+              0 0 30px rgba(255, 255, 255, 0.4);
+}
+
+/* Theme-specific icon effects */
+.chat-icon-button.karma .chat-icon {
+  filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.4));
+}
+
+.chat-icon-button.dharma .chat-icon {
+  filter: drop-shadow(0 0 3px rgba(144, 238, 144, 0.4));
+}
+
+.chat-icon-button.atma .chat-icon {
+  font-size: 34px;
+  filter: drop-shadow(0 0 3px rgba(173, 216, 230, 0.4));
 } 
