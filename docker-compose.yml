@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: nandi-postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: nandi
+      POSTGRES_PASSWORD: nandi_password
+      POSTGRES_DB: nandi_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/nandi_schema.sql:/docker-entrypoint-initdb.d/nandi_schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nandi -d nandi_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: nandi-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass nandi_redis_password
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "nandi_redis_password", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: nandi-pgadmin
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@nandi.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  redis_data:
+  pgadmin_data: 
