@@ -336,14 +336,20 @@
 @media (max-width: 768px) {
   .nandi-chat-window {
     width: 100vw; /* Full width on mobile */
-    height: 80vh; /* More screen space */
+    height: 85vh; /* More screen space */
     right: 0;
     left: 0; /* Center it */
-    bottom: 80px; /* Position above bottom nav */
+    bottom: 0; /* Position at the bottom of the screen */
     margin: 0 auto; /* Center horizontally */
     border-radius: 20px 20px 0 0; /* Round only top corners */
     background-color: rgba(0, 0, 0, 0); /* 100% transparent on mobile */
     backdrop-filter: blur(5px);
+  }
+  
+  /* When body has chat-active class, adjust positioning */
+  .chat-active .nandi-chat-window {
+    height: 92vh; /* Even more space when nav is hidden */
+    bottom: 0; /* Align to the very bottom */
   }
   
   .chat-header {
@@ -352,10 +358,12 @@
   
   .chat-messages-container {
     background-color: rgba(0, 0, 0, 0); /* 100% transparent on mobile */
+    padding-bottom: 30px; /* Add extra padding at the bottom for better scrolling */
   }
   
   .chat-input-area {
     background-color: rgba(0, 0, 0, 0.1); /* Consistent on mobile */
+    padding: 15px 15px 25px 15px; /* Extra padding at the bottom */
   }
   
   /* Mobile focus helper - helps trigger keyboard on iOS */

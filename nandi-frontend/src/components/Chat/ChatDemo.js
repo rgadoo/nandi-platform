@@ -70,6 +70,13 @@ const ChatDemo = () => {
     // Otherwise, set the active chat to the selected chatId
     setActiveChat(chatId === activeChat ? null : chatId);
     
+    // Add or remove a class to the body to control nav bar visibility on mobile
+    if (chatId && chatId !== activeChat) {
+      document.body.classList.add('chat-active');
+    } else {
+      document.body.classList.remove('chat-active');
+    }
+    
     // Prevent home page shift by making sure the chat window doesn't
     // affect the layout of other elements
     document.body.style.overflow = chatId ? 'hidden' : '';
