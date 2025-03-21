@@ -147,4 +147,227 @@
     height: 50px;
     font-size: 20px;
   }
+}
+
+/* Chat Container */
+.karma-chat-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 120px);
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.05),
+    inset 0 -2px 5px rgba(255, 255, 255, 0.2),
+    inset 0 2px 5px rgba(255, 255, 255, 0.2);
+  padding: 16px;
+  overflow: hidden;
+}
+
+/* Points Display */
+.karma-points-display {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: rgba(248, 245, 240, 0.9);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.medal-icon {
+  color: #e6a948;
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.points-total {
+  font-weight: 600;
+  font-size: 18px;
+  color: #644b2c;
+}
+
+.quality-indicator {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.quality-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  margin-right: 10px;
+}
+
+.quality-badge.high {
+  background-color: #4CAF50;
+}
+
+.quality-badge.medium {
+  background-color: #FFC107;
+  color: #333;
+}
+
+.quality-badge.low {
+  background-color: #FF5722;
+}
+
+.points-earned {
+  font-weight: 600;
+  color: #4CAF50;
+  font-size: 16px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Chat Messages */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: rgba(248, 245, 240, 0.5);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.message {
+  max-width: 80%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.message.user {
+  align-self: flex-end;
+  background-color: #E8F5E9;
+  border-bottom-right-radius: 4px;
+}
+
+.message.ai {
+  align-self: flex-start;
+  background-color: white;
+  border-bottom-left-radius: 4px;
+}
+
+.message.error {
+  background-color: #FFEBEE;
+  color: #D32F2F;
+}
+
+.message-content {
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.message-time {
+  font-size: 12px;
+  color: #888;
+  margin-top: 6px;
+  text-align: right;
+}
+
+/* Chat Input */
+.chat-input-form {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.chat-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+  font-size: 16px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.chat-input:focus {
+  outline: none;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(99, 76, 45, 0.2);
+}
+
+.send-button {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background-color: #634c2d;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.send-button:hover {
+  background-color: #7e623c;
+  transform: translateY(-2px);
+}
+
+.send-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .karma-chat-container {
+    height: calc(100vh - 100px);
+    border-radius: 12px;
+    padding: 12px;
+  }
+  
+  .message {
+    max-width: 90%;
+  }
+  
+  .karma-points-display {
+    padding: 8px 12px;
+  }
+  
+  .quality-badge {
+    font-size: 12px;
+    padding: 3px 8px;
+  }
+  
+  .points-total {
+    font-size: 16px;
+  }
+}
+
+/* Clay-morphism styling for messages */
+.message.user, .message.ai {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.message.user {
+  background: linear-gradient(145deg, #E8F5E9, #d4e0d5);
+}
+
+.message.ai {
+  background: linear-gradient(145deg, #FFFFFF, #f0f0f0);
 } 
