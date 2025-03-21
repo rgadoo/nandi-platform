@@ -70,3 +70,4 @@ Icon
 !.yarn/versions 
 .cursor/
 nandi-ai-service/venv/
+nandi-api/target/
