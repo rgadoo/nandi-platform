@@ -69,3 +69,4 @@ Icon
 !.yarn/sdks
 !.yarn/versions 
 .cursor/
+nandi-ai-service/venv/

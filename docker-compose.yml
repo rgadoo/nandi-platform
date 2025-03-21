@@ -1,16 +1,16 @@
 version: '3.8'
 
 services:
-  postgres:
+  nandi-postgres:
     image: postgres:14
     container_name: nandi-postgres
     restart: always
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: nandi
-      POSTGRES_PASSWORD: nandi_password
-      POSTGRES_DB: nandi_db
+      - POSTGRES_DB=nandi_db
+      - POSTGRES_USER=nandi
+      - POSTGRES_PASSWORD=nandi_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/nandi_schema.sql:/docker-entrypoint-initdb.d/nandi_schema.sql
@@ -20,8 +20,8 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7
+  nandi-redis:
+    image: redis:6
     container_name: nandi-redis
     restart: always
     ports:
@@ -30,13 +30,13 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "nandi_redis_password", "ping"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  pgadmin:
-    image: dpage/pgadmin4
+  nandi-pgadmin:
+    image: dpage/pgadmin4:latest
     container_name: nandi-pgadmin
     restart: always
     ports:
@@ -47,7 +47,62 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
-      - postgres
+      - nandi-postgres
+
+  nandi-api:
+    build: 
+      context: ./nandi-api
+      dockerfile: Dockerfile
+    image: nandi/api:latest
+    container_name: nandi-api
+    ports:
+      - "9080:9080"
+    environment:
+      - POSTGRES_HOST=nandi-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=nandi_db
+      - POSTGRES_USER=nandi
+      - POSTGRES_PASSWORD=nandi_password
+      - REDIS_HOST=nandi-redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=nandi_redis_password
+      - AI_SERVICE_URL=http://nandi-ai-service:8000
+      - NANDI_AI_SERVICE_API_KEY=development-key
+    depends_on:
+      nandi-postgres:
+        condition: service_healthy
+      nandi-redis:
+        condition: service_healthy
+
+  nandi-ai-service:
+    build:
+      context: ./nandi-ai-service
+      dockerfile: Dockerfile
+    image: nandi/ai-service:latest
+    container_name: nandi-ai-service
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_HOST=nandi-redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=nandi_redis_password
+      - API_KEY=development-key
+    depends_on:
+      nandi-redis:
+        condition: service_healthy
+
+  nandi-frontend:
+    build:
+      context: ./nandi-frontend
+      dockerfile: Dockerfile
+    image: nandi/frontend:latest
+    container_name: nandi-frontend
+    ports:
+      - "80:80"
+    environment:
+      - API_URL=http://nandi-api:9080
+    depends_on:
+      - nandi-api
 
 volumes:
   postgres_data:
