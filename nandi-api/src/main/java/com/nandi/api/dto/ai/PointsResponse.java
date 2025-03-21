@@ -5,25 +5,33 @@ import java.util.Map;
 
 public class PointsResponse {
     
+    @JsonProperty("points_earned")
+    private Integer pointsEarned;
+    
     @JsonProperty("total_points")
     private Integer totalPoints;
     
     private Map<String, Integer> breakdown;
     
-    @JsonProperty("session_id")
-    private String sessionId;
-    
     // Default constructor
     public PointsResponse() {}
     
     // Constructor with all fields
-    public PointsResponse(Integer totalPoints, Map<String, Integer> breakdown, String sessionId) {
+    public PointsResponse(Integer pointsEarned, Integer totalPoints, Map<String, Integer> breakdown) {
+        this.pointsEarned = pointsEarned;
         this.totalPoints = totalPoints;
         this.breakdown = breakdown;
-        this.sessionId = sessionId;
     }
     
     // Getters and Setters
+    public Integer getPointsEarned() {
+        return pointsEarned;
+    }
+    
+    public void setPointsEarned(Integer pointsEarned) {
+        this.pointsEarned = pointsEarned;
+    }
+    
     public Integer getTotalPoints() {
         return totalPoints;
     }
@@ -38,13 +46,5 @@ public class PointsResponse {
     
     public void setBreakdown(Map<String, Integer> breakdown) {
         this.breakdown = breakdown;
-    }
-    
-    public String getSessionId() {
-        return sessionId;
-    }
-    
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
     }
 } 

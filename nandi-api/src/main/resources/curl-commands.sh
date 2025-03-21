@@ -2,16 +2,16 @@
 
 # Health Check Endpoint
 echo "Testing Health Check Endpoint..."
-curl http://localhost:9080/q/health
+curl http://localhost:9080/api/health
 
 # Chat Generation Endpoint
 echo -e "\n\nTesting Chat Generation Endpoint..."
 curl -X POST http://localhost:9080/api/chat/generate \
   -H "Content-Type: application/json" \
   -d '{
-    "message": "Hello",
+    "message": "Hello, how are you?",
     "persona": "karma",
-    "session_id": "test-session-1",
+    "session_id": "test-session-123",
     "context": []
   }'
 
@@ -21,13 +21,17 @@ curl -X POST http://localhost:9080/api/session/metrics \
   -H "Content-Type: application/json" \
   -d '{
     "persona": "karma",
-    "duration_seconds": 300,
-    "message_count": 5
+    "durationSeconds": 300,
+    "messageCount": 10
   }'
 
-# AI Service Health Endpoint
-echo -e "\n\nTesting AI Service Health Endpoint..."
-curl http://localhost:9080/api/health
+# Points Calculations Endpoint
+echo -e "\n\nTesting Points Calculations Endpoint..."
+curl http://localhost:9080/api/points/calculations
+
+# AI Service Health Endpoint (direct)
+echo -e "\n\nTesting AI Service Health Endpoint (direct)..."
+curl http://localhost:8000/health
 
 # Swagger UI (if enabled)
 echo -e "\n\nTesting Swagger UI Endpoint..."

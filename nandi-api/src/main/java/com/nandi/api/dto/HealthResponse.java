@@ -1,73 +1,55 @@
 package com.nandi.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
-@Schema(description = "Response object containing health check information")
 public class HealthResponse {
-    @Schema(description = "Current status of the service")
     @NotNull
     private String status;
 
-    @Schema(description = "Timestamp of the health check")
     @NotNull
     private String timestamp;
 
-    @Schema(description = "Service version")
     @NotNull
     private String version;
 
-    @Schema(description = "Current environment (development, staging, production)")
     @NotNull
     private String environment;
 
-    @Schema(description = "System metrics")
     @NotNull
     private SystemMetrics system;
 
-    @Schema(description = "Service metrics")
     @NotNull
     private ServiceMetrics service;
 
-    @Schema(description = "Error information if any")
     private String error;
 
     public static class SystemMetrics {
-        @Schema(description = "CPU usage percentage")
         @NotNull
         private Double cpuUsage;
 
-        @Schema(description = "Memory usage information")
         @NotNull
         private MemoryUsage memoryUsage;
 
-        @Schema(description = "Disk usage information")
         @NotNull
         private DiskUsage diskUsage;
 
-        @Schema(description = "Platform information")
         @NotNull
         private String platform;
 
-        @Schema(description = "Python version")
         @NotNull
         private String pythonVersion;
 
         public static class MemoryUsage {
-            @Schema(description = "Memory usage percentage")
             @NotNull
             private Double percent;
 
-            @Schema(description = "Used memory in MB")
             @NotNull
             private Double usedMb;
 
-            @Schema(description = "Total memory in MB")
             @NotNull
             private Double totalMb;
 
-            // Getters and setters
             public Double getPercent() {
                 return percent;
             }
@@ -94,19 +76,15 @@ public class HealthResponse {
         }
 
         public static class DiskUsage {
-            @Schema(description = "Disk usage percentage")
             @NotNull
             private Double percent;
 
-            @Schema(description = "Used disk space in GB")
             @NotNull
             private Double usedGb;
 
-            @Schema(description = "Total disk space in GB")
             @NotNull
             private Double totalGb;
 
-            // Getters and setters
             public Double getPercent() {
                 return percent;
             }
@@ -132,7 +110,6 @@ public class HealthResponse {
             }
         }
 
-        // Getters and setters
         public Double getCpuUsage() {
             return cpuUsage;
         }
@@ -175,15 +152,12 @@ public class HealthResponse {
     }
 
     public static class ServiceMetrics {
-        @Schema(description = "Current cache size")
         @NotNull
         private Long cacheSize;
 
-        @Schema(description = "Service uptime in seconds")
         @NotNull
         private Long uptimeSeconds;
 
-        // Getters and setters
         public Long getCacheSize() {
             return cacheSize;
         }
@@ -201,7 +175,6 @@ public class HealthResponse {
         }
     }
 
-    // Getters and setters
     public String getStatus() {
         return status;
     }
