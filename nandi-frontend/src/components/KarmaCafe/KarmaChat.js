@@ -1,224 +1,153 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './KarmaCafe.css';
 import { FaPaperPlane, FaMedal } from 'react-icons/fa';
 import { v4 as uuidv4 } from 'uuid';
+import { chatService } from '../../services/api';
+import { ERROR_MESSAGES } from '../../utils/errorHandling';
 
-const KarmaChat = ({ persona = "karma" }) => {
-  const [messages, setMessages] = useState([]);
+const KarmaChat = ({ persona = 'Karma' }) => {
+  const [messages, setMessages] = useState([{
+    id: uuidv4(),
+    type: 'ai',
+    content: `Welcome to KarmaCafe. I'm ${persona}, how can I help you on your spiritual journey today?`,
+    timestamp: new Date()
+  }]);
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [sessionId, setSessionId] = useState('');
-  const [points, setPoints] = useState({
-    total: 0,
-    breakdown: null,
-    qualityScore: null,
-    lastMessagePoints: 0
-  });
-  const [sessionStartTime, setSessionStartTime] = useState(null);
+  const [points, setPoints] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [lastQualityScore, setLastQualityScore] = useState(null);
+  const [lastPointsEarned, setLastPointsEarned] = useState(null);
   const messagesEndRef = useRef(null);
-  
-  // AI service URL (loaded from env)
-  const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://localhost:8000';
-  // API service URL (loaded from env)
-  const API_SERVICE_URL = process.env.REACT_APP_API_SERVICE_URL || 'http://localhost:8080';
-  // API key (in real app would be stored more securely)
-  const API_KEY = process.env.REACT_APP_API_KEY || 'dev_api_key';
-  
+  const chatContainerRef = useRef(null);
+
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      const { scrollHeight, clientHeight } = chatContainerRef.current;
+      chatContainerRef.current.scrollTop = scrollHeight - clientHeight;
+    }
+  };
+
   useEffect(() => {
-    // Initialize session
-    const newSessionId = uuidv4();
-    setSessionId(newSessionId);
-    setSessionStartTime(new Date());
-    
-    // Add welcome message
-    setMessages([{
-      id: uuidv4(),
-      text: `Welcome to KarmaCafe. I'm ${persona === 'karma' ? 'Karma' : persona === 'dharma' ? 'Dharma' : 'Atma'}, how can I help you on your spiritual journey today?`,
-      sender: 'ai',
-      timestamp: new Date()
-    }]);
-  }, [persona]);
-  
-  useEffect(() => {
-    // Scroll to bottom of messages
     scrollToBottom();
   }, [messages]);
-  
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+  const formatTime = (date) => {
+    if (!(date instanceof Date) || isNaN(date)) {
+      const now = new Date();
+      return new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      }).format(now);
+    }
+    return new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    }).format(date);
   };
-  
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
-  };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!input.trim()) return;
-    
+    if (!input.trim() || loading) return;
+
     const userMessage = {
       id: uuidv4(),
-      text: input,
-      sender: 'user',
+      type: 'user',
+      content: input.trim(),
       timestamp: new Date()
     };
-    
-    setMessages(prevMessages => [...prevMessages, userMessage]);
+
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
-    setIsLoading(true);
-    
+    setError('');
+    setLoading(true);
+    setLastQualityScore(null);
+    setLastPointsEarned(null);
+
     try {
-      // 1. Get response from AI service
-      const chatResponse = await fetch(`${AI_SERVICE_URL}/api/chat/generate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': API_KEY
-        },
-        body: JSON.stringify({
-          message: input,
-          persona: persona,
-          session_id: sessionId,
-          context: messages.map(msg => ({
-            role: msg.sender === 'user' ? 'user' : 'assistant',
-            content: msg.text
-          }))
-        })
-      });
+      const response = await chatService.generateResponse(userMessage.content);
       
-      const chatData = await chatResponse.json();
-      
-      if (!chatResponse.ok) {
-        throw new Error(chatData.detail || 'Error getting chat response');
-      }
-      
-      // Add AI message to chat
       const aiMessage = {
         id: uuidv4(),
-        text: chatData.message,
-        sender: 'ai',
-        timestamp: new Date(),
-        qualityScore: chatData.quality_score
+        type: 'ai',
+        content: response.response,
+        timestamp: new Date()
       };
-      
-      setMessages(prevMessages => [...prevMessages, aiMessage]);
-      
-      // 2. If we have a quality score, calculate points with API service
-      if (chatData.quality_score) {
-        // Calculate session duration in minutes
-        const sessionDurationMinutes = Math.round((new Date() - sessionStartTime) / 60000);
-        
-        // Get user's consecutive day info from localStorage
-        const lastActivityDate = localStorage.getItem('lastActivityDate');
-        const today = new Date().toDateString();
-        const isConsecutiveDay = lastActivityDate && 
-          new Date(lastActivityDate).toDateString() === 
-          new Date(new Date().setDate(new Date().getDate() - 1)).toDateString();
-        
-        // Store today's date
-        localStorage.setItem('lastActivityDate', today);
-        
-        // Get total questions count from localStorage
-        const totalQuestionsCount = parseInt(localStorage.getItem('totalQuestionsCount') || '0') + 1;
-        localStorage.setItem('totalQuestionsCount', totalQuestionsCount.toString());
-        
-        // Send request to API service to calculate points
-        const pointsResponse = await fetch(`${API_SERVICE_URL}/api/points/calculate`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-API-Key': API_KEY
-          },
-          body: JSON.stringify({
-            quality_scores: [chatData.quality_score],
-            session_duration_minutes: sessionDurationMinutes,
-            is_consecutive_day: isConsecutiveDay,
-            total_questions_count: totalQuestionsCount,
-            session_id: sessionId
-          })
-        });
-        
-        if (pointsResponse.ok) {
-          const pointsData = await pointsResponse.json();
-          
-          // Update points state
-          setPoints({
-            total: pointsData.points_data.total_points,
-            breakdown: pointsData.points_data.breakdown,
-            qualityScore: chatData.quality_score,
-            lastMessagePoints: pointsData.points_data.questions_breakdown[0].points
-          });
-          
-          // Save total points to localStorage
-          const totalPoints = parseInt(localStorage.getItem('totalPoints') || '0') + 
-            pointsData.points_data.total_points;
-          localStorage.setItem('totalPoints', totalPoints.toString());
-        }
+
+      setMessages(prev => [...prev, aiMessage]);
+      setLastQualityScore(response.qualityScore);
+      setLastPointsEarned(response.points);
+
+      const metrics = await chatService.calculateSessionMetrics();
+      if (metrics && metrics.totalPoints !== undefined) {
+        setPoints(metrics.totalPoints);
       }
     } catch (error) {
-      console.error('Error in chat:', error);
-      // Add error message
-      setMessages(prevMessages => [...prevMessages, {
+      console.error('Chat Error:', error);
+      setError(error.message || ERROR_MESSAGES.DEFAULT);
+      
+      // Add error message to chat
+      setMessages(prev => [...prev, {
         id: uuidv4(),
-        text: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
-        sender: 'ai',
+        type: 'ai',
+        content: error.message || ERROR_MESSAGES.DEFAULT,
         timestamp: new Date(),
         isError: true
       }]);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
-  
+
+  const getQualityClass = (score) => {
+    if (score >= 8) return 'high';
+    if (score >= 5) return 'medium';
+    return 'low';
+  };
+
   return (
     <div className="karma-chat-container">
       <div className="karma-points-display">
         <FaMedal className="medal-icon" />
-        <span className="points-total">{points.total || 0} points</span>
-        {points.qualityScore && (
+        <span className="points-total">{points} points</span>
+        {lastQualityScore !== null && (
           <div className="quality-indicator">
-            <div className={`quality-badge ${
-              points.qualityScore.score >= 8 ? 'high' : 
-              points.qualityScore.score >= 4 ? 'medium' : 'low'
-            }`}>
-              Quality: {points.qualityScore.score}/10
+            <div className={`quality-badge ${getQualityClass(lastQualityScore)}`}>
+              Quality: {lastQualityScore}/10
             </div>
-            {points.lastMessagePoints > 0 && (
-              <div className="points-earned">+{points.lastMessagePoints} pts</div>
+            {lastPointsEarned && (
+              <div className="points-earned">+{lastPointsEarned} pts</div>
             )}
           </div>
         )}
       </div>
-      
-      <div className="chat-messages">
+
+      {error && <div className="error-message">{error}</div>}
+
+      <div className="chat-messages" ref={chatContainerRef}>
         {messages.map(message => (
-          <div 
-            key={message.id} 
-            className={`message ${message.sender} ${message.isError ? 'error' : ''}`}
-          >
-            <div className="message-content">{message.text}</div>
-            <div className="message-time">
-              {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-            </div>
+          <div key={message.id} className={`message ${message.type} ${message.isError ? 'error' : ''}`}>
+            <div className="message-content">{message.content}</div>
+            <div className="message-time">{formatTime(message.timestamp)}</div>
           </div>
         ))}
-        <div ref={messagesEndRef} />
       </div>
-      
-      <form onSubmit={handleSubmit} className="chat-input-form">
+
+      <form role="form" className="chat-input-form" onSubmit={handleSubmit}>
         <input
           type="text"
-          value={input}
-          onChange={handleInputChange}
-          placeholder="Ask a question..."
-          disabled={isLoading}
           className="chat-input"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Ask a question..."
+          disabled={loading}
         />
-        <button 
-          type="submit" 
-          disabled={isLoading || !input.trim()} 
+        <button
+          type="submit"
           className="send-button"
+          disabled={loading || !input.trim()}
         >
           <FaPaperPlane />
         </button>
